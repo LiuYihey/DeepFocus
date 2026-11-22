@@ -1,0 +1,12 @@
+{
+  "name": "@local/dsh-preset-neko",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "猫娘模式 — DSH agent persona preset",
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    }
+  }
+}

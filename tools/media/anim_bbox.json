@@ -1,0 +1,2291 @@
+[
+ {
+  "name": "001_beiluoye-yanmo",
+  "canvas": [
+   640,
+   360
+  ],
+  "bbox": [
+   33,
+   35,
+   610,
+   360
+  ],
+  "bbox_size": [
+   577,
+   325
+  ],
+  "fill_w": 0.902,
+  "fill_h": 0.903,
+  "frames": 120,
+  "bytes": 1535142
+ },
+ {
+  "name": "002_beishubiao-tuozhuai-xuankong-fankui",
+  "canvas": [
+   640,
+   360
+  ],
+  "bbox": [
+   205,
+   27,
+   450,
+   330
+  ],
+  "bbox_size": [
+   245,
+   303
+  ],
+  "fill_w": 0.383,
+  "fill_h": 0.842,
+  "frames": 120,
+  "bytes": 1443642
+ },
+ {
+  "name": "003_beixiayitiao-zhamao",
+  "canvas": [
+   640,
+   360
+  ],
+  "bbox": [
+   206,
+   32,
+   433,
+   329
+  ],
+  "bbox_size": [
+   227,
+   297
+  ],
+  "fill_w": 0.355,
+  "fill_h": 0.825,
+  "frames": 120,
+  "bytes": 1406440
+ },
+ {
+  "name": "004_bian-gezi",
+  "canvas": [
+   640,
+   360
+  ],
+  "bbox": [
+   120,
+   23,
+   524,
+   330
+  ],
+  "bbox_size": [
+   404,
+   307
+  ],
+  "fill_w": 0.631,
+  "fill_h": 0.853,
+  "frames": 120,
+  "bytes": 1370690
+ },
+ {
+  "name": "005_cha-zhuyu-shangju",
+  "canvas": [
+   640,
+   360
+  ],
+  "bbox": [
+   209,
+   64,
+   438,
+   330
+  ],
+  "bbox_size": [
+   229,
+   266
+  ],
+  "fill_w": 0.358,
+  "fill_h": 0.739,
+  "frames": 120,
+  "bytes": 1379724
+ },
+ {
+  "name": "006_chai-liwu",
+  "canvas": [
+   640,
+   360
+  ],
+  "bbox": [
+   158,
+   46,
+   469,
+   339
+  ],
+  "bbox_size": [
+   311,
+   293
+  ],
+  "fill_w": 0.486,
+  "fill_h": 0.814,
+  "frames": 120,
+  "bytes": 1360274
+ },
+ {
+  "name": "007_chaoda-shenlanyao",
+  "canvas": [
+   640,
+   360
+  ],
+  "bbox": [
+   212,
+   58,
+   430,
+   330
+  ],
+  "bbox_size": [
+   218,
+   272
+  ],
+  "fill_w": 0.341,
+  "fill_h": 0.756,
+  "frames": 120,
+  "bytes": 1373618
+ },
+ {
+  "name": "008_chenjian-shuaya",
+  "canvas": [
+   640,
+   360
+  ],
+  "bbox": [
+   200,
+   62,
+   436,
+   346
+  ],
+  "bbox_size": [
+   236,
+   284
+  ],
+  "fill_w": 0.369,
+  "fill_h": 0.789,
+  "frames": 120,
+  "bytes": 1451940
+ },
+ {
+  "name": "009_chi-baifan",
+  "canvas": [
+   640,
+   360
+  ],
+  "bbox": [
+   204,
+   63,
+   435,
+   337
+  ],
+  "bbox_size": [
+   231,
+   274
+  ],
+  "fill_w": 0.361,
+  "fill_h": 0.761,
+  "frames": 120,
+  "bytes": 1403430
+ },
+ {
+  "name": "010_chi-bingqilin-ronghua",
+  "canvas": [
+   640,
+   360
+  ],
+  "bbox": [
+   209,
+   61,
+   430,
+   334
+  ],
+  "bbox_size": [
+   221,
+   273
+  ],
+  "fill_w": 0.345,
+  "fill_h": 0.758,
+  "frames": 120,
+  "bytes": 1410572
+ },
+ {
+  "name": "011_chi-changshoumian",
+  "canvas": [
+   640,
+   360
+  ],
+  "bbox": [
+   128,
+   62,
+   437,
+   329
+  ],
+  "bbox_size": [
+   309,
+   267
+  ],
+  "fill_w": 0.483,
+  "fill_h": 0.742,
+  "frames": 120,
+  "bytes": 1392224
+ },
+ {
+  "name": "012_chi-chongyanggao",
+  "canvas": [
+   640,
+   360
+  ],
+  "bbox": [
+   212,
+   62,
+   434,
+   330
+  ],
+  "bbox_size": [
+   222,
+   268
+  ],
+  "fill_w": 0.347,
+  "fill_h": 0.744,
+  "frames": 120,
+  "bytes": 1374558
+ },
+ {
+  "name": "013_chi-dazhaxie",
+  "canvas": [
+   640,
+   360
+  ],
+  "bbox": [
+   204,
+   63,
+   452,
+   340
+  ],
+  "bbox_size": [
+   248,
+   277
+  ],
+  "fill_w": 0.388,
+  "fill_h": 0.769,
+  "frames": 120,
+  "bytes": 1435906
+ },
+ {
+  "name": "014_chi-labazhou",
+  "canvas": [
+   640,
+   360
+  ],
+  "bbox": [
+   203,
+   64,
+   429,
+   330
+  ],
+  "bbox_size": [
+   226,
+   266
+  ],
+  "fill_w": 0.353,
+  "fill_h": 0.739,
+  "frames": 120,
+  "bytes": 1356380
+ },
+ {
+  "name": "015_chi-niangao",
+  "canvas": [
+   640,
+   360
+  ],
+  "bbox": [
+   203,
+   63,
+   432,
+   330
+  ],
+  "bbox_size": [
+   229,
+   267
+  ],
+  "fill_w": 0.358,
+  "fill_h": 0.742,
+  "frames": 120,
+  "bytes": 1350790
+ },
+ {
+  "name": "016_chi-qingtuan",
+  "canvas": [
+   640,
+   360
+  ],
+  "bbox": [
+   208,
+   62,
+   432,
+   330
+  ],
+  "bbox_size": [
+   224,
+   268
+  ],
+  "fill_w": 0.35,
+  "fill_h": 0.744,
+  "frames": 120,
+  "bytes": 1382312
+ },
+ {
+  "name": "017_chi-tanghulu",
+  "canvas": [
+   640,
+   360
+  ],
+  "bbox": [
+   205,
+   61,
+   439,
+   330
+  ],
+  "bbox_size": [
+   234,
+   269
+  ],
+  "fill_w": 0.366,
+  "fill_h": 0.747,
+  "frames": 120,
+  "bytes": 1416120
+ },
+ {
+  "name": "018_chi-token",
+  "canvas": [
+   640,
+   360
+  ],
+  "bbox": [
+   144,
+   60,
+   497,
+   332
+  ],
+  "bbox_size": [
+   353,
+   272
+  ],
+  "fill_w": 0.552,
+  "fill_h": 0.756,
+  "frames": 120,
+  "bytes": 1476234
+ },
+ {
+  "name": "019_chi-wancan",
+  "canvas": [
+   640,
+   360
+  ],
+  "bbox": [
+   203,
+   65,
+   431,
+   329
+  ],
+  "bbox_size": [
+   228,
+   264
+  ],
+  "fill_w": 0.356,
+  "fill_h": 0.733,
+  "frames": 61,
+  "bytes": 665002
+ },
+ {
+  "name": "020_chi-wucan",
+  "canvas": [
+   640,
+   360
+  ],
+  "bbox": [
+   205,
+   61,
+   431,
+   332
+  ],
+  "bbox_size": [
+   226,
+   271
+  ],
+  "fill_w": 0.353,
+  "fill_h": 0.753,
+  "frames": 120,
+  "bytes": 1390074
+ },
+ {
+  "name": "021_chi-xigua",
+  "canvas": [
+   640,
+   360
+  ],
+  "bbox": [
+   206,
+   61,
+   435,
+   331
+  ],
+  "bbox_size": [
+   229,
+   270
+  ],
+  "fill_w": 0.358,
+  "fill_h": 0.75,
+  "frames": 120,
+  "bytes": 1421508
+ },
+ {
+  "name": "022_chi-zaocan",
+  "canvas": [
+   640,
+   360
+  ],
+  "bbox": [
+   210,
+   61,
+   430,
+   328
+  ],
+  "bbox_size": [
+   220,
+   267
+  ],
+  "fill_w": 0.344,
+  "fill_h": 0.742,
+  "frames": 120,
+  "bytes": 1371844
+ },
+ {
+  "name": "023_chi-zongzi",
+  "canvas": [
+   640,
+   360
+  ],
+  "bbox": [
+   211,
+   64,
+   436,
+   332
+  ],
+  "bbox_size": [
+   225,
+   268
+  ],
+  "fill_w": 0.352,
+  "fill_h": 0.744,
+  "frames": 120,
+  "bytes": 1400862
+ },
+ {
+  "name": "024_chijiaozi",
+  "canvas": [
+   640,
+   360
+  ],
+  "bbox": [
+   194,
+   36,
+   450,
+   340
+  ],
+  "bbox_size": [
+   256,
+   304
+  ],
+  "fill_w": 0.4,
+  "fill_h": 0.844,
+  "frames": 120,
+  "bytes": 1490544
+ },
+ {
+  "name": "025_chitangyuan",
+  "canvas": [
+   640,
+   360
+  ],
+  "bbox": [
+   212,
+   64,
+   433,
+   329
+  ],
+  "bbox_size": [
+   221,
+   265
+  ],
+  "fill_w": 0.345,
+  "fill_h": 0.736,
+  "frames": 120,
+  "bytes": 1367296
+ },
+ {
+  "name": "026_chou-tuoluo",
+  "canvas": [
+   640,
+   360
+  ],
+  "bbox": [
+   166,
+   65,
+   437,
+   342
+  ],
+  "bbox_size": [
+   271,
+   277
+  ],
+  "fill_w": 0.423,
+  "fill_h": 0.769,
+  "frames": 120,
+  "bytes": 1377832
+ },
+ {
+  "name": "027_chuanzhenqiqiao",
+  "canvas": [
+   640,
+   360
+  ],
+  "bbox": [
+   183,
+   47,
+   534,
+   330
+  ],
+  "bbox_size": [
+   351,
+   283
+  ],
+  "fill_w": 0.548,
+  "fill_h": 0.786,
+  "frames": 120,
+  "bytes": 1410806
+ },
+ {
+  "name": "028_chui-dizi",
+  "canvas": [
+   640,
+   360
+  ],
+  "bbox": [
+   79,
+   28,
+   543,
+   335
+  ],
+  "bbox_size": [
+   464,
+   307
+  ],
+  "fill_w": 0.725,
+  "fill_h": 0.853,
+  "frames": 120,
+  "bytes": 1574136
+ },
+ {
+  "name": "029_chui-qiqiu",
+  "canvas": [
+   640,
+   360
+  ],
+  "bbox": [
+   22,
+   35,
+   607,
+   360
+  ],
+  "bbox_size": [
+   585,
+   325
+  ],
+  "fill_w": 0.914,
+  "fill_h": 0.903,
+  "frames": 120,
+  "bytes": 1535084
+ },
+ {
+  "name": "030_da-keshui-bei-jingxing",
+  "canvas": [
+   640,
+   360
+  ],
+  "bbox": [
+   201,
+   20,
+   447,
+   330
+  ],
+  "bbox_size": [
+   246,
+   310
+  ],
+  "fill_w": 0.384,
+  "fill_h": 0.861,
+  "frames": 120,
+  "bytes": 1366466
+ },
+ {
+  "name": "031_dai-kong-ru-xi",
+  "canvas": [
+   640,
+   360
+  ],
+  "bbox": [
+   195,
+   61,
+   433,
+   341
+  ],
+  "bbox_size": [
+   238,
+   280
+  ],
+  "fill_w": 0.372,
+  "fill_h": 0.778,
+  "frames": 120,
+  "bytes": 1442620
+ },
+ {
+  "name": "032_daiji-huxi-xiuxian",
+  "canvas": [
+   640,
+   360
+  ],
+  "bbox": [
+   197,
+   60,
+   435,
+   330
+  ],
+  "bbox_size": [
+   238,
+   270
+  ],
+  "fill_w": 0.372,
+  "fill_h": 0.75,
+  "frames": 120,
+  "bytes": 1365928
+ },
+ {
+  "name": "033_dakou-chi-lingshi",
+  "canvas": [
+   640,
+   360
+  ],
+  "bbox": [
+   44,
+   44,
+   589,
+   355
+  ],
+  "bbox_size": [
+   545,
+   311
+  ],
+  "fill_w": 0.852,
+  "fill_h": 0.864,
+  "frames": 120,
+  "bytes": 1532478
+ },
+ {
+  "name": "034_dangqiuqian",
+  "canvas": [
+   640,
+   360
+  ],
+  "bbox": [
+   191,
+   19,
+   477,
+   331
+  ],
+  "bbox_size": [
+   286,
+   312
+  ],
+  "fill_w": 0.447,
+  "fill_h": 0.867,
+  "frames": 120,
+  "bytes": 1430514
+ },
+ {
+  "name": "035_dianji-huiying-aojiao-shengqi-ceshen-zhanshi",
+  "canvas": [
+   640,
+   360
+  ],
+  "bbox": [
+   203,
+   61,
+   428,
+   330
+  ],
+  "bbox_size": [
+   225,
+   269
+  ],
+  "fill_w": 0.352,
+  "fill_h": 0.747,
+  "frames": 120,
+  "bytes": 1150692
+ },
+ {
+  "name": "036_dianji-huiying-haixiu-jingya",
+  "canvas": [
+   640,
+   360
+  ],
+  "bbox": [
+   209,
+   64,
+   436,
+   330
+  ],
+  "bbox_size": [
+   227,
+   266
+  ],
+  "fill_w": 0.355,
+  "fill_h": 0.739,
+  "frames": 120,
+  "bytes": 1395886
+ },
+ {
+  "name": "037_dianji-huiying-kaixin-yuedong",
+  "canvas": [
+   640,
+   360
+  ],
+  "bbox": [
+   184,
+   20,
+   457,
+   328
+  ],
+  "bbox_size": [
+   273,
+   308
+  ],
+  "fill_w": 0.427,
+  "fill_h": 0.856,
+  "frames": 120,
+  "bytes": 1413826
+ },
+ {
+  "name": "038_dianji-huiying-naoyang-gegexiao",
+  "canvas": [
+   640,
+   360
+  ],
+  "bbox": [
+   206,
+   58,
+   438,
+   330
+  ],
+  "bbox_size": [
+   232,
+   272
+  ],
+  "fill_w": 0.362,
+  "fill_h": 0.756,
+  "frames": 120,
+  "bytes": 1360090
+ },
+ {
+  "name": "039_dianji-huiying-yuanqi-huishou",
+  "canvas": [
+   640,
+   360
+  ],
+  "bbox": [
+   208,
+   37,
+   430,
+   330
+  ],
+  "bbox_size": [
+   222,
+   293
+  ],
+  "fill_w": 0.347,
+  "fill_h": 0.814,
+  "frames": 120,
+  "bytes": 1398742
+ },
+ {
+  "name": "040_dongwu-huanrao",
+  "canvas": [
+   640,
+   360
+  ],
+  "bbox": [
+   80,
+   32,
+   545,
+   343
+  ],
+  "bbox_size": [
+   465,
+   311
+  ],
+  "fill_w": 0.727,
+  "fill_h": 0.864,
+  "frames": 120,
+  "bytes": 1743970
+ },
+ {
+  "name": "041_dongzhangxiwang",
+  "canvas": [
+   640,
+   360
+  ],
+  "bbox": [
+   209,
+   63,
+   441,
+   330
+  ],
+  "bbox_size": [
+   232,
+   267
+  ],
+  "fill_w": 0.362,
+  "fill_h": 0.742,
+  "frames": 120,
+  "bytes": 1352348
+ },
+ {
+  "name": "042_duixueren",
+  "canvas": [
+   640,
+   360
+  ],
+  "bbox": [
+   199,
+   64,
+   485,
+   341
+  ],
+  "bbox_size": [
+   286,
+   277
+  ],
+  "fill_w": 0.447,
+  "fill_h": 0.769,
+  "frames": 120,
+  "bytes": 1334364
+ },
+ {
+  "name": "043_fang-fengzheng",
+  "canvas": [
+   640,
+   360
+  ],
+  "bbox": [
+   104,
+   0,
+   508,
+   332
+  ],
+  "bbox_size": [
+   404,
+   332
+  ],
+  "fill_w": 0.631,
+  "fill_h": 0.922,
+  "frames": 120,
+  "bytes": 1590844
+ },
+ {
+  "name": "044_fang-kongmingdeng",
+  "canvas": [
+   640,
+   360
+  ],
+  "bbox": [
+   169,
+   4,
+   435,
+   329
+  ],
+  "bbox_size": [
+   266,
+   325
+  ],
+  "fill_w": 0.416,
+  "fill_h": 0.903,
+  "frames": 120,
+  "bytes": 1352632
+ },
+ {
+  "name": "045_fang-yanhua",
+  "canvas": [
+   640,
+   360
+  ],
+  "bbox": [
+   27,
+   1,
+   611,
+   360
+  ],
+  "bbox_size": [
+   584,
+   359
+  ],
+  "fill_w": 0.912,
+  "fill_h": 0.997,
+  "frames": 120,
+  "bytes": 1756320
+ },
+ {
+  "name": "046_fanghedeng",
+  "canvas": [
+   640,
+   360
+  ],
+  "bbox": [
+   209,
+   64,
+   433,
+   330
+  ],
+  "bbox_size": [
+   224,
+   266
+  ],
+  "fill_w": 0.35,
+  "fill_h": 0.739,
+  "frames": 120,
+  "bytes": 1327936
+ },
+ {
+  "name": "047_fen-wen-bu-sheng",
+  "canvas": [
+   640,
+   360
+  ],
+  "bbox": [
+   147,
+   60,
+   446,
+   334
+  ],
+  "bbox_size": [
+   299,
+   274
+  ],
+  "fill_w": 0.467,
+  "fill_h": 0.761,
+  "frames": 120,
+  "bytes": 1425300
+ },
+ {
+  "name": "048_gongzuozhuangtai-chuitou-tanqi-maohan",
+  "canvas": [
+   640,
+   360
+  ],
+  "bbox": [
+   161,
+   49,
+   426,
+   329
+  ],
+  "bbox_size": [
+   265,
+   280
+  ],
+  "fill_w": 0.414,
+  "fill_h": 0.778,
+  "frames": 59,
+  "bytes": 695562
+ },
+ {
+  "name": "049_gongzuozhuangtai-manglu-dianan",
+  "canvas": [
+   640,
+   360
+  ],
+  "bbox": [
+   180,
+   7,
+   444,
+   330
+  ],
+  "bbox_size": [
+   264,
+   323
+  ],
+  "fill_w": 0.412,
+  "fill_h": 0.897,
+  "frames": 120,
+  "bytes": 1447584
+ },
+ {
+  "name": "050_gongzuozhuangtai-qingdian-guidang",
+  "canvas": [
+   640,
+   360
+  ],
+  "bbox": [
+   213,
+   64,
+   428,
+   329
+  ],
+  "bbox_size": [
+   215,
+   265
+  ],
+  "fill_w": 0.336,
+  "fill_h": 0.736,
+  "frames": 120,
+  "bytes": 1370462
+ },
+ {
+  "name": "051_gongzuozhuangtai-queyue-qingzhu",
+  "canvas": [
+   640,
+   360
+  ],
+  "bbox": [
+   177,
+   19,
+   462,
+   330
+  ],
+  "bbox_size": [
+   285,
+   311
+  ],
+  "fill_w": 0.445,
+  "fill_h": 0.864,
+  "frames": 120,
+  "bytes": 1454668
+ },
+ {
+  "name": "052_gongzuozhuangtai-sikao-maopao",
+  "canvas": [
+   640,
+   360
+  ],
+  "bbox": [
+   185,
+   55,
+   433,
+   330
+  ],
+  "bbox_size": [
+   248,
+   275
+  ],
+  "fill_w": 0.388,
+  "fill_h": 0.764,
+  "frames": 120,
+  "bytes": 1435852
+ },
+ {
+  "name": "053_gongzuozhuangtai-yuandi-duobu-zhangwang",
+  "canvas": [
+   640,
+   360
+  ],
+  "bbox": [
+   186,
+   42,
+   437,
+   331
+  ],
+  "bbox_size": [
+   251,
+   289
+  ],
+  "fill_w": 0.392,
+  "fill_h": 0.803,
+  "frames": 120,
+  "bytes": 1421234
+ },
+ {
+  "name": "054_haqian-liantian",
+  "canvas": [
+   640,
+   360
+  ],
+  "bbox": [
+   207,
+   60,
+   432,
+   330
+  ],
+  "bbox_size": [
+   225,
+   270
+  ],
+  "fill_w": 0.352,
+  "fill_h": 0.75,
+  "frames": 120,
+  "bytes": 1417084
+ },
+ {
+  "name": "055_hudie-mifeng-huanrao-touding-kaihua",
+  "canvas": [
+   640,
+   360
+  ],
+  "bbox": [
+   7,
+   9,
+   629,
+   336
+  ],
+  "bbox_size": [
+   622,
+   327
+  ],
+  "fill_w": 0.972,
+  "fill_h": 0.908,
+  "frames": 120,
+  "bytes": 1660362
+ },
+ {
+  "name": "056_jin-dai-ding-dang",
+  "canvas": [
+   640,
+   360
+  ],
+  "bbox": [
+   137,
+   33,
+   517,
+   358
+  ],
+  "bbox_size": [
+   380,
+   325
+  ],
+  "fill_w": 0.594,
+  "fill_h": 0.903,
+  "frames": 120,
+  "bytes": 1400878
+ },
+ {
+  "name": "057_jingyu-tu-paopao-texiao",
+  "canvas": [
+   640,
+   360
+  ],
+  "bbox": [
+   116,
+   36,
+   430,
+   328
+  ],
+  "bbox_size": [
+   314,
+   292
+  ],
+  "fill_w": 0.491,
+  "fill_h": 0.811,
+  "frames": 120,
+  "bytes": 1439308
+ },
+ {
+  "name": "058_keai-zhaiwu",
+  "canvas": [
+   640,
+   360
+  ],
+  "bbox": [
+   208,
+   56,
+   443,
+   331
+  ],
+  "bbox_size": [
+   235,
+   275
+  ],
+  "fill_w": 0.367,
+  "fill_h": 0.764,
+  "frames": 120,
+  "bytes": 1395510
+ },
+ {
+  "name": "059_lanjing-xianshi",
+  "canvas": [
+   640,
+   360
+  ],
+  "bbox": [
+   130,
+   38,
+   481,
+   330
+  ],
+  "bbox_size": [
+   351,
+   292
+  ],
+  "fill_w": 0.548,
+  "fill_h": 0.811,
+  "frames": 120,
+  "bytes": 1399824
+ },
+ {
+  "name": "060_lu-mao",
+  "canvas": [
+   640,
+   360
+  ],
+  "bbox": [
+   210,
+   62,
+   431,
+   329
+  ],
+  "bbox_size": [
+   221,
+   267
+  ],
+  "fill_w": 0.345,
+  "fill_h": 0.742,
+  "frames": 120,
+  "bytes": 1425780
+ },
+ {
+  "name": "061_menghua-xiaoyouling",
+  "canvas": [
+   640,
+   360
+  ],
+  "bbox": [
+   161,
+   49,
+   481,
+   337
+  ],
+  "bbox_size": [
+   320,
+   288
+  ],
+  "fill_w": 0.5,
+  "fill_h": 0.8,
+  "frames": 120,
+  "bytes": 1341892
+ },
+ {
+  "name": "062_nvpu-quxi-liyi",
+  "canvas": [
+   640,
+   360
+  ],
+  "bbox": [
+   211,
+   63,
+   428,
+   333
+  ],
+  "bbox_size": [
+   217,
+   270
+  ],
+  "fill_w": 0.339,
+  "fill_h": 0.75,
+  "frames": 120,
+  "bytes": 1337542
+ },
+ {
+  "name": "063_pangxie-zoulu",
+  "canvas": [
+   640,
+   360
+  ],
+  "bbox": [
+   187,
+   64,
+   450,
+   332
+  ],
+  "bbox_size": [
+   263,
+   268
+  ],
+  "fill_w": 0.411,
+  "fill_h": 0.744,
+  "frames": 120,
+  "bytes": 1312630
+ },
+ {
+  "name": "064_pingkong-shenghua",
+  "canvas": [
+   640,
+   360
+  ],
+  "bbox": [
+   146,
+   27,
+   543,
+   339
+  ],
+  "bbox_size": [
+   397,
+   312
+  ],
+  "fill_w": 0.62,
+  "fill_h": 0.867,
+  "frames": 120,
+  "bytes": 1385110
+ },
+ {
+  "name": "065_puke-moshu",
+  "canvas": [
+   640,
+   360
+  ],
+  "bbox": [
+   181,
+   64,
+   435,
+   330
+  ],
+  "bbox_size": [
+   254,
+   266
+  ],
+  "fill_w": 0.397,
+  "fill_h": 0.739,
+  "frames": 120,
+  "bytes": 1413278
+ },
+ {
+  "name": "066_qi-muma",
+  "canvas": [
+   640,
+   360
+  ],
+  "bbox": [
+   154,
+   16,
+   494,
+   360
+  ],
+  "bbox_size": [
+   340,
+   344
+  ],
+  "fill_w": 0.531,
+  "fill_h": 0.956,
+  "frames": 120,
+  "bytes": 1625160
+ },
+ {
+  "name": "067_qian-dai-man-yi",
+  "canvas": [
+   640,
+   360
+  ],
+  "bbox": [
+   122,
+   36,
+   569,
+   351
+  ],
+  "bbox_size": [
+   447,
+   315
+  ],
+  "fill_w": 0.698,
+  "fill_h": 0.875,
+  "frames": 120,
+  "bytes": 1386270
+ },
+ {
+  "name": "068_qian-dai-ru-chang",
+  "canvas": [
+   640,
+   360
+  ],
+  "bbox": [
+   138,
+   59,
+   434,
+   331
+  ],
+  "bbox_size": [
+   296,
+   272
+  ],
+  "fill_w": 0.463,
+  "fill_h": 0.756,
+  "frames": 120,
+  "bytes": 1446968
+ },
+ {
+  "name": "069_qingkuai-jilu",
+  "canvas": [
+   640,
+   360
+  ],
+  "bbox": [
+   194,
+   60,
+   434,
+   329
+  ],
+  "bbox_size": [
+   240,
+   269
+  ],
+  "fill_w": 0.375,
+  "fill_h": 0.747,
+  "frames": 120,
+  "bytes": 1371758
+ },
+ {
+  "name": "070_qingkuai-yaobaiwu",
+  "canvas": [
+   640,
+   360
+  ],
+  "bbox": [
+   196,
+   61,
+   471,
+   331
+  ],
+  "bbox_size": [
+   275,
+   270
+  ],
+  "fill_w": 0.43,
+  "fill_h": 0.75,
+  "frames": 120,
+  "bytes": 1374574
+ },
+ {
+  "name": "071_sanqiu-paojie",
+  "canvas": [
+   640,
+   360
+  ],
+  "bbox": [
+   209,
+   38,
+   435,
+   330
+  ],
+  "bbox_size": [
+   226,
+   292
+  ],
+  "fill_w": 0.353,
+  "fill_h": 0.811,
+  "frames": 120,
+  "bytes": 1424842
+ },
+ {
+  "name": "072_shendu-sikao-suisuinian",
+  "canvas": [
+   640,
+   360
+  ],
+  "bbox": [
+   96,
+   53,
+   551,
+   330
+  ],
+  "bbox_size": [
+   455,
+   277
+  ],
+  "fill_w": 0.711,
+  "fill_h": 0.769,
+  "frames": 120,
+  "bytes": 1558748
+ },
+ {
+  "name": "073_shia-chishenme",
+  "canvas": [
+   640,
+   360
+  ],
+  "bbox": [
+   56,
+   45,
+   605,
+   330
+  ],
+  "bbox_size": [
+   549,
+   285
+  ],
+  "fill_w": 0.858,
+  "fill_h": 0.792,
+  "frames": 120,
+  "bytes": 1747994
+ },
+ {
+  "name": "074_shou-hongbao",
+  "canvas": [
+   640,
+   360
+  ],
+  "bbox": [
+   208,
+   64,
+   439,
+   330
+  ],
+  "bbox_size": [
+   231,
+   266
+  ],
+  "fill_w": 0.361,
+  "fill_h": 0.739,
+  "frames": 120,
+  "bytes": 1357536
+ },
+ {
+  "name": "075_shu-jin-zhou-mei",
+  "canvas": [
+   640,
+   360
+  ],
+  "bbox": [
+   210,
+   62,
+   433,
+   330
+  ],
+  "bbox_size": [
+   223,
+   268
+  ],
+  "fill_w": 0.348,
+  "fill_h": 0.744,
+  "frames": 120,
+  "bytes": 1404486
+ },
+ {
+  "name": "076_shuan-huoguo",
+  "canvas": [
+   640,
+   360
+  ],
+  "bbox": [
+   209,
+   63,
+   435,
+   345
+  ],
+  "bbox_size": [
+   226,
+   282
+  ],
+  "fill_w": 0.353,
+  "fill_h": 0.783,
+  "frames": 120,
+  "bytes": 1436610
+ },
+ {
+  "name": "077_shuijiao-kaishi",
+  "canvas": [
+   640,
+   360
+  ],
+  "bbox": [
+   211,
+   59,
+   440,
+   334
+  ],
+  "bbox_size": [
+   229,
+   275
+  ],
+  "fill_w": 0.358,
+  "fill_h": 0.764,
+  "frames": 120,
+  "bytes": 1248030
+ },
+ {
+  "name": "078_shuijiao-qilai",
+  "canvas": [
+   640,
+   360
+  ],
+  "bbox": [
+   187,
+   61,
+   442,
+   342
+  ],
+  "bbox_size": [
+   255,
+   281
+  ],
+  "fill_w": 0.398,
+  "fill_h": 0.781,
+  "frames": 120,
+  "bytes": 1295570
+ },
+ {
+  "name": "079_shuijiao-xunhuan",
+  "canvas": [
+   640,
+   360
+  ],
+  "bbox": [
+   177,
+   41,
+   426,
+   333
+  ],
+  "bbox_size": [
+   249,
+   292
+  ],
+  "fill_w": 0.389,
+  "fill_h": 0.811,
+  "frames": 120,
+  "bytes": 1176188
+ },
+ {
+  "name": "080_suisuinian-cazhuo-suisuinian",
+  "canvas": [
+   640,
+   360
+  ],
+  "bbox": [
+   201,
+   63,
+   433,
+   330
+  ],
+  "bbox_size": [
+   232,
+   267
+  ],
+  "fill_w": 0.362,
+  "fill_h": 0.742,
+  "frames": 120,
+  "bytes": 1372618
+ },
+ {
+  "name": "081_suisuinian-duiping-suisuinian",
+  "canvas": [
+   640,
+   360
+  ],
+  "bbox": [
+   214,
+   62,
+   427,
+   330
+  ],
+  "bbox_size": [
+   213,
+   268
+  ],
+  "fill_w": 0.333,
+  "fill_h": 0.744,
+  "frames": 120,
+  "bytes": 1387384
+ },
+ {
+  "name": "082_suisuinian-fadai-suisuinian",
+  "canvas": [
+   640,
+   360
+  ],
+  "bbox": [
+   207,
+   50,
+   431,
+   330
+  ],
+  "bbox_size": [
+   224,
+   280
+  ],
+  "fill_w": 0.35,
+  "fill_h": 0.778,
+  "frames": 120,
+  "bytes": 1384270
+ },
+ {
+  "name": "083_taotang-nanguadeng",
+  "canvas": [
+   640,
+   360
+  ],
+  "bbox": [
+   202,
+   63,
+   445,
+   332
+  ],
+  "bbox_size": [
+   243,
+   269
+  ],
+  "fill_w": 0.38,
+  "fill_h": 0.747,
+  "frames": 120,
+  "bytes": 1371052
+ },
+ {
+  "name": "084_ti-jianzi",
+  "canvas": [
+   640,
+   360
+  ],
+  "bbox": [
+   194,
+   29,
+   448,
+   332
+  ],
+  "bbox_size": [
+   254,
+   303
+  ],
+  "fill_w": 0.397,
+  "fill_h": 0.842,
+  "frames": 120,
+  "bytes": 1407410
+ },
+ {
+  "name": "085_touchi-lingshi-bei-zhuazhu",
+  "canvas": [
+   640,
+   360
+  ],
+  "bbox": [
+   211,
+   31,
+   438,
+   330
+  ],
+  "bbox_size": [
+   227,
+   299
+  ],
+  "fill_w": 0.355,
+  "fill_h": 0.831,
+  "frames": 120,
+  "bytes": 1426840
+ },
+ {
+  "name": "086_wan-shuiqiang",
+  "canvas": [
+   640,
+   360
+  ],
+  "bbox": [
+   35,
+   64,
+   592,
+   358
+  ],
+  "bbox_size": [
+   557,
+   294
+  ],
+  "fill_w": 0.87,
+  "fill_h": 0.817,
+  "frames": 120,
+  "bytes": 1458232
+ },
+ {
+  "name": "087_wan-youxi-qijibaituai",
+  "canvas": [
+   640,
+   360
+  ],
+  "bbox": [
+   169,
+   57,
+   448,
+   342
+  ],
+  "bbox_size": [
+   279,
+   285
+  ],
+  "fill_w": 0.436,
+  "fill_h": 0.792,
+  "frames": 120,
+  "bytes": 1481086
+ },
+ {
+  "name": "088_wu-shitou",
+  "canvas": [
+   640,
+   360
+  ],
+  "bbox": [
+   202,
+   32,
+   442,
+   330
+  ],
+  "bbox_size": [
+   240,
+   298
+  ],
+  "fill_w": 0.375,
+  "fill_h": 0.828,
+  "frames": 120,
+  "bytes": 1477966
+ },
+ {
+  "name": "089_xiaofudu-yuandi-360du-xuanzhuan-zhanshi",
+  "canvas": [
+   640,
+   360
+  ],
+  "bbox": [
+   191,
+   48,
+   466,
+   331
+  ],
+  "bbox_size": [
+   275,
+   283
+  ],
+  "fill_w": 0.43,
+  "fill_h": 0.786,
+  "frames": 120,
+  "bytes": 1282424
+ },
+ {
+  "name": "090_xiaotiqin-yanzou",
+  "canvas": [
+   640,
+   360
+  ],
+  "bbox": [
+   138,
+   62,
+   469,
+   341
+  ],
+  "bbox_size": [
+   331,
+   279
+  ],
+  "fill_w": 0.517,
+  "fill_h": 0.775,
+  "frames": 120,
+  "bytes": 1411600
+ },
+ {
+  "name": "091_xiawuziqi",
+  "canvas": [
+   640,
+   360
+  ],
+  "bbox": [
+   204,
+   51,
+   441,
+   344
+  ],
+  "bbox_size": [
+   237,
+   293
+  ],
+  "fill_w": 0.37,
+  "fill_h": 0.814,
+  "frames": 120,
+  "bytes": 1388240
+ },
+ {
+  "name": "092_xie-daima",
+  "canvas": [
+   640,
+   360
+  ],
+  "bbox": [
+   211,
+   61,
+   431,
+   330
+  ],
+  "bbox_size": [
+   220,
+   269
+  ],
+  "fill_w": 0.344,
+  "fill_h": 0.747,
+  "frames": 120,
+  "bytes": 1344418
+ },
+ {
+  "name": "093_xie-fuzi",
+  "canvas": [
+   640,
+   360
+  ],
+  "bbox": [
+   171,
+   62,
+   433,
+   331
+  ],
+  "bbox_size": [
+   262,
+   269
+  ],
+  "fill_w": 0.409,
+  "fill_h": 0.747,
+  "frames": 120,
+  "bytes": 1362304
+ },
+ {
+  "name": "094_yaoshan-naliang",
+  "canvas": [
+   640,
+   360
+  ],
+  "bbox": [
+   157,
+   54,
+   468,
+   332
+  ],
+  "bbox_size": [
+   311,
+   278
+  ],
+  "fill_w": 0.486,
+  "fill_h": 0.772,
+  "frames": 120,
+  "bytes": 1421338
+ },
+ {
+  "name": "095_yong-jingyu-weiba-paidadi",
+  "canvas": [
+   640,
+   360
+  ],
+  "bbox": [
+   210,
+   62,
+   468,
+   330
+  ],
+  "bbox_size": [
+   258,
+   268
+  ],
+  "fill_w": 0.403,
+  "fill_h": 0.744,
+  "frames": 120,
+  "bytes": 1417414
+ },
+ {
+  "name": "096_youxian-hengga",
+  "canvas": [
+   640,
+   360
+  ],
+  "bbox": [
+   145,
+   7,
+   486,
+   330
+  ],
+  "bbox_size": [
+   341,
+   323
+  ],
+  "fill_w": 0.533,
+  "fill_h": 0.897,
+  "frames": 120,
+  "bytes": 1425358
+ },
+ {
+  "name": "097_youya-nvpuwu",
+  "canvas": [
+   640,
+   360
+  ],
+  "bbox": [
+   205,
+   53,
+   464,
+   332
+  ],
+  "bbox_size": [
+   259,
+   279
+  ],
+  "fill_w": 0.405,
+  "fill_h": 0.775,
+  "frames": 120,
+  "bytes": 1325366
+ },
+ {
+  "name": "098_yuandi-dunxia-wan-wanju-qiche",
+  "canvas": [
+   640,
+   360
+  ],
+  "bbox": [
+   171,
+   64,
+   437,
+   339
+  ],
+  "bbox_size": [
+   266,
+   275
+  ],
+  "fill_w": 0.416,
+  "fill_h": 0.764,
+  "frames": 120,
+  "bytes": 1225956
+ },
+ {
+  "name": "099_yuandi-piaofu-tabu",
+  "canvas": [
+   640,
+   360
+  ],
+  "bbox": [
+   213,
+   61,
+   432,
+   333
+  ],
+  "bbox_size": [
+   219,
+   272
+  ],
+  "fill_w": 0.342,
+  "fill_h": 0.756,
+  "frames": 120,
+  "bytes": 1364862
+ },
+ {
+  "name": "100_yuandi-qiaoji-zhuomian-hudong",
+  "canvas": [
+   640,
+   360
+  ],
+  "bbox": [
+   203,
+   64,
+   427,
+   330
+  ],
+  "bbox_size": [
+   224,
+   266
+  ],
+  "fill_w": 0.35,
+  "fill_h": 0.739,
+  "frames": 120,
+  "bytes": 1308452
+ },
+ {
+  "name": "101_yuandi-tiaoyue-zhuasui-touding-wupin",
+  "canvas": [
+   640,
+   360
+  ],
+  "bbox": [
+   115,
+   0,
+   524,
+   329
+  ],
+  "bbox_size": [
+   409,
+   329
+  ],
+  "fill_w": 0.639,
+  "fill_h": 0.914,
+  "frames": 120,
+  "bytes": 1293500
+ },
+ {
+  "name": "102_yuandi-xiaoqi-chenmian",
+  "canvas": [
+   640,
+   360
+  ],
+  "bbox": [
+   207,
+   30,
+   429,
+   327
+  ],
+  "bbox_size": [
+   222,
+   297
+  ],
+  "fill_w": 0.347,
+  "fill_h": 0.825,
+  "frames": 120,
+  "bytes": 1371792
+ },
+ {
+  "name": "103_yuandi-zhongli-xiadun-yasuo",
+  "canvas": [
+   640,
+   360
+  ],
+  "bbox": [
+   208,
+   47,
+   453,
+   336
+  ],
+  "bbox_size": [
+   245,
+   289
+  ],
+  "fill_w": 0.383,
+  "fill_h": 0.803,
+  "frames": 120,
+  "bytes": 1138848
+ },
+ {
+  "name": "104_yuandi-zhuanxin-wan-mofang",
+  "canvas": [
+   640,
+   360
+  ],
+  "bbox": [
+   179,
+   65,
+   433,
+   331
+  ],
+  "bbox_size": [
+   254,
+   266
+  ],
+  "fill_w": 0.397,
+  "fill_h": 0.739,
+  "frames": 120,
+  "bytes": 1398936
+ },
+ {
+  "name": "105_yuandi-zuozhuan-benpao",
+  "canvas": [
+   640,
+   360
+  ],
+  "bbox": [
+   121,
+   57,
+   466,
+   335
+  ],
+  "bbox_size": [
+   345,
+   278
+  ],
+  "fill_w": 0.539,
+  "fill_h": 0.772,
+  "frames": 120,
+  "bytes": 1238352
+ },
+ {
+  "name": "106_zhao-jingzi",
+  "canvas": [
+   640,
+   360
+  ],
+  "bbox": [
+   198,
+   54,
+   459,
+   330
+  ],
+  "bbox_size": [
+   261,
+   276
+  ],
+  "fill_w": 0.408,
+  "fill_h": 0.767,
+  "frames": 120,
+  "bytes": 1403504
+ },
+ {
+  "name": "107_zhengti-huanzhuang-shise",
+  "canvas": [
+   640,
+   360
+  ],
+  "bbox": [
+   192,
+   54,
+   474,
+   330
+  ],
+  "bbox_size": [
+   282,
+   276
+  ],
+  "fill_w": 0.441,
+  "fill_h": 0.767,
+  "frames": 120,
+  "bytes": 1143506
+ },
+ {
+  "name": "108_zhongqiu-shangyue-chi-yuebing",
+  "canvas": [
+   640,
+   360
+  ],
+  "bbox": [
+   198,
+   52,
+   583,
+   330
+  ],
+  "bbox_size": [
+   385,
+   278
+  ],
+  "fill_w": 0.602,
+  "fill_h": 0.772,
+  "frames": 120,
+  "bytes": 1476062
+ },
+ {
+  "name": "109_zhuangdian-shengdanshu",
+  "canvas": [
+   640,
+   360
+  ],
+  "bbox": [
+   97,
+   43,
+   497,
+   350
+  ],
+  "bbox_size": [
+   400,
+   307
+  ],
+  "fill_w": 0.625,
+  "fill_h": 0.853,
+  "frames": 120,
+  "bytes": 1843390
+ }
+]

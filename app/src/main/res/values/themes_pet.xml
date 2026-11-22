@@ -8,7 +8,7 @@
       - excludeFromRecents → 不出现在最近任务里
       - windowIsFloating → 独立小窗，不占满屏
     -->
-    <style name="Theme.FocusFish.PetBoot" parent="android:Theme.Material.NoActionBar">
+    <style name="Theme.DeepFocus.PetBoot" parent="android:Theme.Material.NoActionBar">
         <item name="android:windowIsTranslucent">true</item>
         <item name="android:windowBackground">@android:color/transparent</item>
         <item name="android:windowContentOverlay">@null</item>

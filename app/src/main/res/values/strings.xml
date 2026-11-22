@@ -8,15 +8,15 @@
 -->
 <resources>
     <!-- 应用名称（AndroidManifest.xml android:label 引用） -->
-    <string name="app_name">专注大肥鱼</string>
+    <string name="app_name">DeepFocus</string>
 
     <!-- 无障碍服务（AndroidManifest.xml + accessibility_service_config.xml 引用） -->
-    <string name="accessibility_service_label">专注大肥鱼 - 应用监控</string>
-    <string name="accessibility_service_description">监控指定应用的启动，在进入分心应用前弹出反思问答页面，帮助您保持专注。选择退出即可获得大白饭奖励，投喂您的专注大肥鱼。</string>
+    <string name="accessibility_service_label">DeepFocus - 应用监控</string>
+    <string name="accessibility_service_description">监控指定应用的启动，在进入分心应用前弹出反思问答页面，帮助您保持专注。选择退出即可获得大白饭奖励，投喂您的大肥鱼。</string>
 
-    <!-- 前台服务通知（FocusFishService.kt + FocusFishApp.kt getString() 引用） -->
+    <!-- 前台服务通知（DeepFocusService.kt + DeepFocusApp.kt getString() 引用） -->
     <string name="notification_channel_name">专注守护服务</string>
-    <string name="notification_channel_desc">保持专注大肥鱼在后台运行</string>
-    <string name="notification_title">专注大肥鱼运行中</string>
+    <string name="notification_channel_desc">保持 DeepFocus 在后台运行</string>
+    <string name="notification_title">DeepFocus 运行中</string>
     <string name="notification_text">正在守护你的专注时间，大肥鱼在等你回来</string>
 </resources>

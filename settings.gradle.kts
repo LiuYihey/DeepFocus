@@ -18,5 +18,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "FocusFish"
+rootProject.name = "DeepFocus"
 include(":app")

@@ -1,0 +1,249 @@
+# 架构
+
+本文说明这个插件在 DSH 里到底做了什么、数据长什么样、一次提示词组装时发生了什么，以及它出现在哪几个界面上。
+面向维护者。
+
+## 1. 源码、构建产物与两个半边
+
+| 半边 | 源码 | 构建产物 | 运行位置 | 职责 |
+|---|---|---|---|---|
+| host | `src/index.ts` | `lib/index.js` + `lib/index.d.ts` | DSH Node 进程 | 读写人设存储、解析匹配、注册 system-prompt section、对外提供 `agentPersona` 远程服务 |
+| client | `src/client.ts` | `lib/client.js`（单文件 bundle） | 浏览器（Web app） | 设置页、对话页「人设」Tab、侧边栏卡片；挂载远程描述符后经 `ctx.get('remote.agentPersona')` 调宿主 |
+
+源码是 **TypeScript**，`lib/` **不进 git**（`.gitignore` 里），由 `npm run build` 产出：
+
+```
+src/endpoints.ts ──(scripts/generate-remote.mjs)──▶ src/remote.ts + src/typert.ts
+                                                          │
+src/index.ts  ──tsc──▶  lib/index.js + lib/index.d.ts      │（前者被客户端 import 并被 esbuild 内联）
+src/client.ts ──esbuild --bundle──▶ lib/client.js  ◀───────┘
+```
+
+- `src/endpoints.ts` 是**远程面的单一来源**（包名、通道名、服务名、16 个方法名、哪些方法收参数）。
+- `src/remote.ts` / `src/typert.ts` 是**生成产物，不要手改**：改 `endpoints.ts` 后跑 `npm run generate:remote`；
+  `npm test` 的最后一步会重新生成并比对，不一致就失败。
+- host 是标准的 Cordis 插件（`export const name / inject / apply`），import Node 内置模块、
+  `@deepseek-ai/schemastery`（配置 schema）与生成的 `./endpoints.js`。
+- client 是 `window.__ModuleLoader__.load({ id, factory })` 模块，`require('react')` 与
+  `require('@deepseek-ai/dsh-client-ui-primitives')` 由宿主提供；**它由 esbuild 打成单文件**（生成的描述符清单
+  会被内联进去），所以浏览器侧没有裸 import。
+
+挂载走的是包内声明的组合层（`package.json` 的 `dsh.bundle.patch`），`cordis.patch.yml` 只有一行：
+
+```yaml
+- insert:
+    - id: agent-persona
+      name: dsh-agent-persona
+```
+
+同一行也是浏览器 roster 行 —— 包在 `package.json` 里声明了 `dsh.client`，client-modules 会顺着这行解析到本包的
+`exports["./client"]` 并在 `/plugins/…/client.js` 提供它。
+
+## 2. 数据模型
+
+```jsonc
+// $DSH_HOME/dsh-agent-persona/personas.json（默认位置；可用 config.storePath 覆盖）
+{
+  "version": 1,
+  "personas": [
+    {
+      "id": "psn_ab12cd34",          // 稳定 id，客户端与远程调用都用它
+      "name": "前端项目助手",
+      "enabled": true,
+      "fallback": false,             // 显式默认人设：未命中任何位置时用它，同一时刻只允许一条
+      "mode": "append",              // append（默认，接在 DSH 身份之后）| replace（去掉 DSH 身份句）
+      "text": "…Markdown 人设正文…",
+      "targets": [
+        { "kind": "workspace", "match": "exact",  "value": "/Users/you/code/my-project" },
+        { "kind": "sessionId", "match": "prefix", "value": "im-bot-" }
+      ]
+    }
+  ],
+  "prefs": { "autosave": false, "showTab": true, "showSidebar": true, "showSettings": true, "guard": true }
+}
+```
+
+- **数组顺序即优先级**（`movePersona` / `reorderPersona` 上/下移就是在改这个顺序）。
+- `kind`：`workspace`（比对 `agent.session.header.cwd`）或 `sessionId`（比对会话 id）。
+- `match`：`exact` / `prefix` / `regex` / `contains`；只有 `exact` 会做路径归一化（`resolve()` 两侧），
+  其余三种比对**原样字符串**。空值、非法正则、缺失对应字段 → 该规则不命中（不抛错）。
+- `targets: []` = 不生效（草稿态）：一个位置都没加的人设不参与注入，**除非** `fallback === true`。
+- `prefs` 是界面偏好（见 §6）。读取是宽容的：缺字段就补默认值，认不出的字段丢弃。
+
+## 3. 一次组装里发生了什么
+
+```
+模型请求
+  └─ dsh-system-prompt 组装 system prompt
+       ├─ section -1000  harness identity
+       ├─ section 0      deployment:persona-prefix（preset 的 persona 行）
+       ├─ section 1      agent-persona   ← 本插件
+       ├─ section 500+   工具引导 …
+       └─ section 10200  deployment:persona-suffix
+            ▲
+            └─ provider 每次组装时求值：
+                 store = 读磁盘（mtimeNs:size 戳变了才重读）
+                 picked = resolvePersona(store.personas, { cwd, sessionId })
+                 text = picked ? sanitize(picked.text) : ''
+                 mode === 'replace' → 再清掉 DSH 自带的身份句（仅当该段文本仍等于部署原文）
+```
+
+`renderPrompt()` 会丢弃渲染为空的 section，所以"没有命中"就等于"完全不注入"，
+其它渠道的提示词逐字节不变。
+
+**解析顺序**（`resolvePersona`）：
+
+1. `enabled === false` → 跳过；
+2. 每条命中的规则按**具体度**打分（`sessionId` > `workspace`，`exact` > `prefix` > `contains`/`regex`，见
+   `targetSpecificity`），取各人设的**最高分**比较，分高者中选；同分才按数组顺序取靠前的；
+3. `targets` 为空 → 跳过（草稿态，不参与注入）；
+4. 一条都没命中 → 看有没有 `fallback === true` 且启用的人设，有就用它；没有就空串；
+5. 中选者 `text.trim() === ''` → 返回空串（显式静默：命中位置但正文为空，等于在该位置不要人设）。
+
+**为什么优先级高于 `AGENTS.md`**：`AGENTS.md` 由 `dsh-agent-instructions` 变成一条 **user 角色**的持久消息，
+它自带的导语写着 *"They do not override system, developer, or direct user instructions."*；
+而本插件写进的是 **system prompt 的 section**。这是框架的结构性保证，不是文案约定。
+
+**变量**：正文里的 `{{model}}` / `{{cwd}}` 由提示词注册表在渲染时解析；其它 `{{…}}` 会在注入前被去括号
+（未注册的变量会让整个组装**抛错**，所以必须在插件侧消毒，见 `sanitizePersona`）。
+
+### 3.1 预设声明 `complete: true` 时
+
+Agent 预设的人设段可以带 `complete: true`，意思是这一节就是完整提示词。宿主 `assemble()` 的流程是：
+
+1. 先把所有 section 收集齐、求值，其中有 `complete` 标记的那一节单独快照一份；
+2. 照常派发 `system-prompt/assemble` 瀑布流（本插件的监听器也在这里跑）；
+3. 瀑布流返回后，如果存在 complete 段，**用第 1 步的快照覆盖 `sections`**，其它 section 全丢。
+
+所以在这种预设下，本插件通过瀑布流写进去的 section 到不了模型，而且不会有任何报错。处理办法是在插件
+`apply()` 里包一层 `assemble()`：先调原方法拿到最终 assembly，如果只剩一节、又不是本插件自己的 section
+（说明我们的 section 被 complete 覆盖了），就把命中的那条人设折进这一节——`append` 接在原文后面，
+`replace` 整段换成人设。插件卸载时把这层包装还原。
+
+几个边界：
+
+- 这个判断只能靠"只剩一节"来识别 complete 段：宿主快照里不带 `complete` 标记。正常情况下提示词至少有
+  harness identity 等多节，所以现在够用；将来若有别的瀑布流把 section 收敛到一节，需要重新评估。
+- 包装会改服务实例上的方法。宿主不让改（冻结/只读）时只跳过这个功能并告警，插件其余部分照常工作。
+- 卸载后包装可能因为别的插件又包了一层而没法从链上摘掉，所以包装里带一个 `active` 标记：插件一旦卸载，
+  它就不再往里折人设，只是原样透传。
+
+## 4. 远程服务契约
+
+host 侧 `WorkspacePersonaService extends TypertRemoteService`，构造时 `super(ctx, 'agentPersona')` ——
+**服务名与服务命名空间都是 `agentPersona`**（不是包名；填错会让客户端永远取不到）。
+
+暴露面由 `src/endpoints.ts` 决定，生成器产出两份产物：
+
+- `src/remote.ts` 的 `RPC_REMOTE`：**客户端 `$mount` 的那份描述符清单**（每条带 `id`、`service`、`namespace`、
+  严格模式 codec、无参方法 `parameters: []`）；
+- `src/typert.ts` 的 `TYPERT`：同一份面的清单对象（`face: 'host'` + `model.services` / `model.invocations`）。
+
+| 方法 | 入参 | 返回 |
+|---|---|---|
+| `listPersonas` | — | 视图：`storePath` / `sectionName` / `sectionOrder` / `allowedVariables` / `targetKinds` / `targetMatches` / `tuneModes` / `counts` / **`prefs`** / **`pluginVersion`** / **`installOrigin`** / **`storeHealth`** / `personas[]`（含 `chars`、`noTargets`、`fallback`、每个 target 的 `invalid` 标记） |
+| `savePersona` | `{ id?, name, enabled, fallback?, mode?, text, targets }` | 视图（无 `id` = 新建，追加到末尾 = 最低优先级；`fallback` 未提及则保留原值） |
+| `deletePersona` | `{ id }` | 视图 |
+| `movePersona` | `{ id, delta: -1 \| 1 }` | 视图 |
+| `reorderPersona` | `{ id, toIndex }` | 视图 |
+| `duplicatePersona` | `{ id }` | 视图（副本**默认停用**） |
+| `listTargets` | — | `{ workspaces: [{ path, title, sessionCount }], sessions: [{ id, title?, cwd, createdAt }] }`（设置页的下拉框数据，按时间倒序，最多 200 条） |
+| `sessionHistory` | `{ id, offset?, events?, maxChars? }` | 该会话的消息（供「看这条会话」弹窗与单条 `展开全文`） |
+| `sessionPrompt` | `{ id }` | `{ available, cwd, reason, matchedBy, persona, prompt }` —— 对话页「人设 / 提示词」两个面板的数据 |
+| `tunePersona` | `{ mode, instruction, text, provider?, model? }` | `{ text, mode, provider, model, source }` |
+| `listModels` | — | `{ models[], hostDefault, configured }` |
+| `savePrefs` | `{ autosave?, showTab?, showSidebar?, showSettings?, guard?, history? }` | 视图（部分合并，未提及的字段保留） |
+
+约定（踩出来的）：
+
+- 客户端 `ctx.remote.$mount(RPC_REMOTE)` 的 codec **只接受 `mode: 'strict'`**，但 schema 只需要有 `parse()`。
+- 远程调用返回**信封** `{ ok: true, value } | { ok: false, error }`；host 抛出的异常到不了浏览器细节，
+  所以每个方法内部 try/catch，把失败当**数据**返回（`{ error: '…' }`），UI 才能显示真实原因。
+- 方法名不能与 cordis `Service` 的成员冲突（`remove`、`name`、`ctx`…），所以是 `deletePersona` 而不是 `remove`。
+
+## 5. 界面上出现在哪
+
+| 座位 / 方式 | 位置 | 说明 |
+|---|---|---|
+| `settings.section`（order 22） | 设置 → Agent 人设 | 完整管理页：**六个偏好开关**、列表、规则编辑器、正文编辑/预览、AI 调优；由 `showSettings` 决定是否注册。标题旁是项目链接（GitHub / npm，simple-icons 的品牌图形内联，`currentColor` 跟随主题）与**当前安装版本的胶囊**（数据来自宿主的 `PLUGIN_INFO`，见 §4 的 `pluginVersion` / `installOrigin`） |
+| `conversation.view`（order 30） | 对话页顶部「人设」 | 人设 / 提示词 / 管理 三个面板；由 `showTab` 决定是否注册。「提示词」面板在一轮对话结束时自动重新读取，正在编辑人设时不会打断 |
+| `betterSidebar.registerTab` | dsh-better-sidebar 的右侧栏 | 同一套页面挂进侧边栏；由 `showSidebar` 决定注册还是注销，未装该插件时**不注册也不显示开关** |
+| `plugins.bundle.config`（key = 包名 `dsh-agent-persona`） | 插件 → 本插件详情页。「界面与功能」 | 与设置页同一组开关（共用 `persistPrefs` / `savePrefs`），行内状态提示（`role=status`），不出 toast。**它是设置入口被关掉之后的回头路** |
+
+四个座位都在**运行时**注册/注销（切换开关立即生效），决策来自 §6 的镜像。
+本插件**不往 `settings.general.item` 注册任何条目**，`test/client-helpers.test.mjs` 有断言守着这一点。
+
+包根的 `icon.svg`（`package.json` 的顶层 `icon` 字段）给插件列表/详情页提供图标；`locale/zh.json` 与
+`locale/en.json` 的 `meta.title` / `meta.description` 提供显示名称与描述（见 dsh 的 `readPluginMeta` 规则：
+图标 ≤256 KiB 且必须在包内，locale 从 `<包名>/locale/<lang>.json` 解析）。
+
+## 6. 界面偏好
+
+六个偏好（`autosave` / `showTab` / `showSidebar` / `showSettings` / `guard` / `history`）**存在人设文件的 `prefs` 里**，与数据同域，经 `savePrefs` 写入；
+每个 `listPersonas` / `sessionPrompt` 的返回都带上它们。显示类开关默认开启，缺字段即视为开启
+（`raw?.showTab !== false` 这一族写法），所以旧存储不需要迁移。
+
+浏览器侧另有一份 **localStorage 镜像**，只做一件事："加载时决定要不要注册视图" —— 那个决定发生在任何宿主调用
+能返回之前，必须同步可得。每次收到视图都会刷新镜像，所以下一次加载与文件一致；**文件是唯一真相**。
+
+`autosave` / `showTab` / `showSidebar` / `showSettings` 由客户端消费；`guard` 只由宿主消费，见 §9。
+设置页与插件页两处开关写的是同一份 `prefs`（同一个 `savePrefs`），所以两边永远一致。
+
+## 7. 模型解析（AI 调优）
+
+默认就用 **DSH 自己设置的模型**，不写死任何厂商。按顺序取：
+
+1. 客户端传来的 `provider`/`model`（界面下拉，来自 `listModels`，默认预选下面第 3 条）；
+2. 本行配置 `config.tuneProvider` / `config.tuneModel`（部署方指定自己的 LLM）；
+3. 宿主服务 `agentDefaultModel.currentSelection()` —— 就是 DSH 当前给新 Agent 用的模型；
+4. 都没有 → 抛明确错误，页面提示没有可用模型。
+
+配置本身是 Schemastery schema（`storePath` / `tuneProvider` / `tuneModel`）：默认值写在 schema 里，
+类型写错会在**加载时失败**而不是被忽略。
+
+## 8. 存储与并发
+
+- 写入是**原子替换**：写 `<file>.tmp-<pid>` 再 `rename`，权限 `600`。
+- 读取按 `mtimeNs:size` 戳缓存：戳不变就用内存副本，戳变了重读。因此"另一个进程改了文件"也能被发现，
+  且运行中的插件实例在文件被替换后**下一个请求**就生效。
+- 读取是**宽容**的：只要求文档里有 `personas` 数组，每个条目都过一遍 `normalizePersona`（丢弃不认识的
+  字段、补全缺失的字段）；不是人设文档就退回空存储并告警，不抛错。
+- **"文件不存在"与"文件存在但读不出来"是两件事**：前者是首次运行，静默地从空存储开始；后者是**重置**，
+  `loadStore` 会带回 `{ reason, path }`，一路传到 `view().storeHealth`，页面据此显示原因与原始路径。
+- **重置之后的第一次写入会先保住原文件**：六个写入点全部改走同一个 `commit(next)`，它在 `persist` 之前调用
+  `backupStoreFile(storePath, backupStamp())`，把原文件复制成 `<file>.bak-<本地时间戳>`（600 权限，原文件留在原地），
+  然后才写。复制失败会让这次写入失败 —— 宁可写不进去，也不覆盖一份没被保住的文件。写入成功后状态变成
+  `backed-up`，页面显示备份路径与手工恢复的方法。
+- `reload()` 只在遇到**新的重置**时清掉备份记录：我们自己那次写入同样会改变文件戳，不能因此把记录抹掉。
+- **默认位置是全局一份**（`$DSH_HOME/dsh-agent-persona/personas.json`，与其它插件状态目录同一约定）；
+  要让某个 profile 独立，在**该 profile** 的 `cordis.patch.yml` 里覆盖 `config.storePath`。
+- `collectTargets(ctx, warn)` 负责收集设置页下拉框的候选：工作区走 `workspaceRegistry.list()`（取
+  `path` / `title` / `sessionIds`），会话走 `sessionPersistence.list()`（按 `createdAt` 倒序，取标题经
+  `sessionTitle.get(session)`）。任何一个服务缺席都只是告警 + 空列表，页面会退回"自己输入…"。
+
+## 9. 工具防篡改（store guard）
+
+人设正文会进入 **system prompt**，所以存储文件就是这个插件自己的指令来源：一个正被某条人设约束的会话，
+不该能反过来改掉或删掉那条人设。宿主在 apply 里注册一个全局 guard：
+
+```ts
+ctx.effect(() => ctx.tools.guard((execution) => (currentStore().prefs.guard === false
+  ? undefined
+  : personaStoreGuardReason(execution, storePath))), 'agent-persona.store-guard')
+```
+
+- **它是一个偏好**（§6 的 `guard`，默认开）：判定时读**实时存储**，所以切换对**下一次工具调用**生效。
+  只注册一个 guard、而不是按开关增删注册：这样只有一条可能留下残留的路径，且行为对调用方是稳定的。
+- **单调**：`ctx.tools.guard` 返回字符串即拒绝，且后面的监听器无法撤销（DSH 工具流水线里，guard 排在
+  `tools/pre-execute` 之后、`tools/execute` 之前）。`undefined` 表示放行。
+- **经 ctx 注册**：用 `ctx.effect` 持有，插件卸载时 guard 随之移除，不会在进程里留下一个永久的拒绝。
+- **判定**（`personaStoreGuardReason`，已导出以便断言）：
+  - 递归取出这次调用参数里的所有字符串（最多 6 层），凡 `resolve()` 后等于存储路径的，一律拒绝；
+    这样 `write` / `edit` / 未来任何写文件的工具都覆盖，不依赖字段名；
+  - 字符串里同时出现**存储文件名或所在目录**与**写入特征**（`>`、`rm`、`mv`、`cp`、`chmod`、`chflags`、
+    `truncate`、`sed -i`、`tee`、`write(`、`unlink(`、`rename(`）的，也拒绝 —— 这一条主要面向 bash；
+  - 只读命令（`cat`、`head`、`md5`…）不含写入特征，照旧放行。
+- **边界（如实说明）**：这是行为约束，不是安全边界。在 `danger-full-access` 权限下仍可绕过（改插件、改 patch、
+  构造不带写入特征的载荷）；shell 那条按**整条命令**判定，所以"读一次并重定向到别处"也会被拒（设计如此）。
+  要更结实只能在机器层面做：`chflags uchg`，或者把 DSH 跑在受限沙箱里。
+- 插件**自己**的写入不受影响（宿主直接写文件，不经过工具流水线），你在界面上的保存照旧可用。

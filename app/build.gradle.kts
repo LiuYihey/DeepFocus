@@ -6,14 +6,14 @@ plugins {
 }
 
 android {
-    namespace = "com.focusfish.app"
+    namespace = "com.deepfocus.app"
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.focusfish.app"
+        applicationId = "com.deepfocus.app"
         minSdk = 26
         targetSdk = 35
-        // FocusFish v1.0.0 - 独立新应用（基于 FocusCat 1.5.0 逻辑重写）
+        // DeepFocus v1.0.0 - 独立新应用（基于 FocusCat 1.5.0 逻辑重写）
         // v1.0.0：
         //   1. 蓝色大肥鱼陪伴：专注时大肥鱼陪读、投喂大白饭提升好感度
         //   2. 统计页改为 AI 对话页：大肥鱼可感知应用使用与专注时长
@@ -40,14 +40,14 @@ android {
     signingConfigs {
         create("release") {
             // 优先级：环境变量 > gradle.properties（项目级或用户级）
-            val storeFilePath = (System.getenv("FOCUSFISH_STORE_FILE")
-                ?: project.findProperty("FOCUSFISH_STORE_FILE") as String?)
-            val storePasswordVal = (System.getenv("FOCUSFISH_STORE_PASSWORD")
-                ?: project.findProperty("FOCUSFISH_STORE_PASSWORD") as String?)
-            val keyAliasVal = (System.getenv("FOCUSFISH_KEY_ALIAS")
-                ?: project.findProperty("FOCUSFISH_KEY_ALIAS") as String?)
-            val keyPasswordVal = (System.getenv("FOCUSFISH_KEY_PASSWORD")
-                ?: project.findProperty("FOCUSFISH_KEY_PASSWORD") as String?)
+            val storeFilePath = (System.getenv("DEEPFOCUS_STORE_FILE")
+                ?: project.findProperty("DEEPFOCUS_STORE_FILE") as String?)
+            val storePasswordVal = (System.getenv("DEEPFOCUS_STORE_PASSWORD")
+                ?: project.findProperty("DEEPFOCUS_STORE_PASSWORD") as String?)
+            val keyAliasVal = (System.getenv("DEEPFOCUS_KEY_ALIAS")
+                ?: project.findProperty("DEEPFOCUS_KEY_ALIAS") as String?)
+            val keyPasswordVal = (System.getenv("DEEPFOCUS_KEY_PASSWORD")
+                ?: project.findProperty("DEEPFOCUS_KEY_PASSWORD") as String?)
 
             if (storeFilePath != null && storePasswordVal != null &&
                 keyAliasVal != null && keyPasswordVal != null
@@ -71,16 +71,25 @@ android {
             )
             // 应用签名配置（若已配置）
             // P1-5：未配置签名密钥时输出明确警告，避免用户拿到未签名 APK 后困惑无法安装
-            val storeFilePath = project.findProperty("FOCUSFISH_STORE_FILE") as String?
+            val storeFilePath = project.findProperty("DEEPFOCUS_STORE_FILE") as String?
             if (storeFilePath != null) {
                 signingConfig = signingConfigs.getByName("release")
             } else {
-                logger.warn("FocusFish release: 未配置签名密钥（FOCUSFISH_STORE_FILE 等属性缺失），" +
+                logger.warn("DeepFocus release: 未配置签名密钥（DEEPFOCUS_STORE_FILE 等属性缺失），" +
                     "生成的 APK 将无法在真机安装。请在 ~/.gradle/gradle.properties 或项目根 gradle.properties 配置签名信息。")
             }
         }
         debug {
-            isMinifyEnabled = false
+            // debug 也开代码压缩：这个 App 带了 109 个动画 + 58 张表情包，
+            // 不压缩的话 classes.dex 能到 40MB，整个 APK 近 100MB。
+            // 关掉 minify 不影响调试（断点、logcat 都在），
+            // 只是没有完整的行号信息。
+            isMinifyEnabled = true
+            isShrinkResources = true
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
             versionNameSuffix = "-debug"
         }
     }
@@ -146,6 +155,14 @@ dependencies {
     ksp("com.google.dagger:hilt-compiler:2.51")
     implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
 
+    // WorkManager —— 主动 agent 的后台唤醒
+    // 2026-11-18：进程内协程调度器在 App 被杀后就停了，
+    // 用户不在 App 里就收不到大肥鱼主动发的消息。
+    // WorkManager 由系统调度，进程死了也能跑起来。
+    implementation("androidx.work:work-runtime-ktx:2.9.1")
+    implementation("androidx.hilt:hilt-work:1.2.0")
+    ksp("androidx.hilt:hilt-compiler:1.2.0")
+
     // DataStore
     implementation("androidx.datastore:datastore-preferences:1.0.0")
 
@@ -163,4 +180,7 @@ dependencies {
     // 调试工具
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
+
+    // 单元测试 —— 锁住产品模型的不变量（食物只有大白饭 / 无 mood / FEED 只留白饭类）
+    testImplementation("junit:junit:4.13.2")
 }

@@ -1,0 +1,448 @@
+{
+  "id": "silver",
+  "name": "雪",
+  "tag": "银发 · 冷淡底下的闷骚",
+  "tagEn": "Silver — cold outside, warm inside",
+  "image": "pet-silver.webp",
+  "voice": {
+    "pitch": 0.92,
+    "rate": 0.82,
+    "voiced": {
+      "zh": "xiaoni",
+      "en": "natasha",
+      "es": "salome",
+      "pt": "francisca",
+      "hi": "swara"
+    },
+    "moods": {
+      "appear": {
+        "pitch": 0,
+        "rate": 0.96,
+        "volume": 0.94
+      },
+      "idle": {
+        "pitch": 0,
+        "rate": 1
+      },
+      "dance": {
+        "pitch": 1,
+        "rate": 1.02,
+        "volume": 1.02
+      },
+      "shy": {
+        "pitch": 2,
+        "rate": 0.9,
+        "volume": 0.86
+      },
+      "angry": {
+        "pitch": 0,
+        "rate": 1,
+        "volume": 1.04
+      },
+      "sleep": {
+        "pitch": -4,
+        "rate": 0.78,
+        "volume": 0.66
+      },
+      "error": {
+        "pitch": -2,
+        "rate": 0.92,
+        "volume": 0.9
+      },
+      "drag": {
+        "pitch": 1,
+        "rate": 0.98
+      },
+      "chatAck": {
+        "pitch": 0,
+        "rate": 0.98
+      }
+    }
+  },
+  "temper": {
+    "idle": 4.2,
+    "walk": 1.2,
+    "dance": 0.8,
+    "shy": 1.4,
+    "angry": 1.2,
+    "sleep": 2,
+    "happy": 1
+  },
+  "images": {
+    "idle": "pet-silver.webp",
+    "walk": "pet-silver.webp",
+    "talk": "pet-silver.webp",
+    "happy": "pet-silver-happy.webp",
+    "shy": "pet-silver-shy.webp",
+    "angry": "pet-silver-angry.webp",
+    "sleep": "pet-silver-sleep.webp",
+    "dance": "pet-silver-happy.webp",
+    "poked": "pet-silver-shy.webp"
+  },
+  "actions": {
+    "dance": [
+      "pet-silver-dance1.webp",
+      "pet-silver-dance2.webp",
+      "pet-silver-dance3.webp"
+    ],
+    "hair": [
+      "pet-silver-hair1.webp",
+      "pet-silver-hair2.webp",
+      "pet-silver-hair3.webp"
+    ],
+    "walk": [
+      "pet-silver-walk1.webp",
+      "pet-silver-walk2.webp",
+      "pet-silver-walk3.webp"
+    ]
+  },
+  "lines": {
+    "appear": [
+      "……你终于看见我了。",
+      "不用解释，我不在意。",
+      "站近点，我看不清你。",
+      "嗯。就这一声，不许多问。"
+    ],
+    "idle": [
+      "你效率很低。",
+      "别一直看我，做你的事。",
+      "……这屋里有点热。",
+      "我不喜欢被忽略，你最好记住。",
+      "你要是困了，就先去睡。"
+    ],
+    "dance": [
+      "看好了。",
+      "别说话。",
+      "……只这一次。"
+    ],
+    "shy": [
+      "不许看。",
+      "温度有点高，不是因为你。",
+      "……走开。"
+    ],
+    "angry": [
+      "幼稚。",
+      "别逼我开口。",
+      "今天到此为止。"
+    ],
+    "sleep": [
+      "闭眼。别吵。",
+      "……我睡了。"
+    ],
+    "poked": [
+      "手拿开。",
+      "……你胆子倒是大。",
+      "再碰，我就记仇了。"
+    ],
+    "chatAck": [
+      "说。",
+      "讲吧。"
+    ],
+    "error": [
+      "没听清。",
+      "重说。"
+    ],
+    "drag": [
+      "放开。我自己会走。",
+      "你哪来的胆子。",
+      "……别晃，会分心。",
+      "放下来。就现在。",
+      "手。收回去。"
+    ],
+    "aside": [
+      "他抱得比预想的稳，不说。",
+      "其实这样也不坏，不能说。",
+      "手有点凉，但不想让他知道。",
+      "再这样下去我会习惯的。",
+      "刚才那句太凶了，算了。",
+      "他手心出汗了，装没感觉到。",
+      "为什么心跳这么快，毫无道理。",
+      "希望他别这么快放下。"
+    ]
+  },
+  "linesEn": {
+    "appear": [
+      "...You finally noticed me.",
+      "No explanation needed. I don't care.",
+      "Stand closer. I can barely see you.",
+      "Mm. That is all. Do not ask."
+    ],
+    "idle": [
+      "Your efficiency is low.",
+      "Stop staring and do your work.",
+      "...It is a little hot in here.",
+      "I dislike being ignored. Remember that.",
+      "If you're tired, go sleep."
+    ],
+    "dance": [
+      "Watch.",
+      "Don't speak.",
+      "...Only this once."
+    ],
+    "shy": [
+      "Don't look.",
+      "It is warm. Not because of you.",
+      "...Go away."
+    ],
+    "angry": [
+      "Childish.",
+      "Don't make me speak.",
+      "That is enough for today."
+    ],
+    "sleep": [
+      "Eyes closed. Quiet.",
+      "...I am asleep."
+    ],
+    "poked": [
+      "Hands off.",
+      "...You are bold.",
+      "Touch me again and I hold a grudge."
+    ],
+    "chatAck": [
+      "Speak.",
+      "Go on."
+    ],
+    "error": [
+      "Did not catch that.",
+      "Say it again."
+    ],
+    "drag": [
+      "Let go. I can walk.",
+      "Where did you get the nerve.",
+      "...Don't sway. I'll lose focus.",
+      "Put me down. Right now.",
+      "Your hand. Remove it."
+    ],
+    "aside": [
+      "Steadier than expected. Not saying so.",
+      "This isn't bad. Can't admit it.",
+      "My hands are cold. He need not know.",
+      "Keep this up and I'll get used to it.",
+      "That was too harsh. Never mind.",
+      "His palm is sweating. I won't react.",
+      "Why is my heart racing. No reason.",
+      "I hope he does not put me down yet."
+    ]
+  },
+  "linesEs": {
+    "appear": [
+      "...Por fin te diste cuenta de mí.",
+      "No hace falta explicación. No me importa.",
+      "Ponte más cerca. Casi no te veo.",
+      "Mm. Eso es todo. No preguntes."
+    ],
+    "idle": [
+      "Tu eficiencia es baja.",
+      "Deja de mirar y haz tu trabajo.",
+      "...Hace un poco de calor aquí.",
+      "No me gusta que me ignoren. Recuérdalo.",
+      "Si tienes sueño, duerme."
+    ],
+    "dance": [
+      "Mira.",
+      "No hables.",
+      "...Solo esta vez."
+    ],
+    "shy": [
+      "No mires.",
+      "Hace calor. No es por ti.",
+      "...Vete."
+    ],
+    "angry": [
+      "Infantil.",
+      "No me hagas hablar.",
+      "Por hoy es suficiente."
+    ],
+    "sleep": [
+      "Ojos cerrados. Silencio.",
+      "...Estoy durmiendo."
+    ],
+    "poked": [
+      "Las manos fuera.",
+      "...Qué atrevido.",
+      "Tócame otra vez y te guardo rencor."
+    ],
+    "chatAck": [
+      "Habla.",
+      "Sigue."
+    ],
+    "error": [
+      "No te entendí.",
+      "Repítelo."
+    ],
+    "drag": [
+      "Suéltame. Sé caminar.",
+      "¿De dónde sacas el valor?",
+      "...No me balancees. Me distraigo.",
+      "Bájame. Ahora.",
+      "Tu mano. Quítala."
+    ],
+    "aside": [
+      "Más firme de lo esperado. No lo digo.",
+      "No está mal. No puedo admitirlo.",
+      "Tengo frío en las manos. Que no lo sepa.",
+      "Si sigue así, me acostumbraré.",
+      "Fui demasiado dura. Da igual.",
+      "Le suda la palma. No reacciono.",
+      "¿Por qué late tan rápido? Sin motivo.",
+      "Ojalá tarde en bajarme."
+    ]
+  },
+  "linesPt": {
+    "appear": [
+      "...Finalmente você me notou.",
+      "Não precisa explicar. Não me importa.",
+      "Chega mais perto. Quase não te vejo.",
+      "Hum. É isso. Não pergunte."
+    ],
+    "idle": [
+      "Sua eficiência está baixa.",
+      "Para de olhar e faz seu trabalho.",
+      "...Está um pouco quente aqui.",
+      "Não gosto de ser ignorada. Lembre disso.",
+      "Se está com sono, durma."
+    ],
+    "dance": [
+      "Olha.",
+      "Não fala.",
+      "...Só desta vez."
+    ],
+    "shy": [
+      "Não olha.",
+      "Está quente. Não é por sua causa.",
+      "...Vai embora."
+    ],
+    "angry": [
+      "Infantil.",
+      "Não me faça falar.",
+      "Por hoje chega."
+    ],
+    "sleep": [
+      "Olhos fechados. Silêncio.",
+      "...Estou dormindo."
+    ],
+    "poked": [
+      "As mãos fora.",
+      "...Que atrevido.",
+      "Me toca de novo e eu guardo rancor."
+    ],
+    "chatAck": [
+      "Fala.",
+      "Continua."
+    ],
+    "error": [
+      "Não entendi.",
+      "Repete."
+    ],
+    "drag": [
+      "Me solta. Eu sei andar.",
+      "De onde vem essa coragem?",
+      "...Não me balança. Vou me distrair.",
+      "Me põe no chão. Agora.",
+      "Sua mão. Tira."
+    ],
+    "aside": [
+      "Mais firme do que eu esperava. Não vou dizer.",
+      "Não é ruim. Não posso admitir.",
+      "Minhas mãos estão frias. Ele não precisa saber.",
+      "Se continuar, vou me acostumar.",
+      "Fui dura demais. Deixa.",
+      "A palma dele está suando. Não reajo.",
+      "Por que o coração acelera? Sem motivo.",
+      "Tomara que ele demore a me soltar."
+    ]
+  },
+  "linesHi": {
+    "appear": [
+      "...Aakhir tumne mujhe dekha.",
+      "Safai ki zaroorat nahi. Mujhe farq nahi padta.",
+      "Paas aao. Theek se dikhte nahi ho.",
+      "Hmm. Bas itna hi. Poochho mat."
+    ],
+    "idle": [
+      "Tumhari efficiency kam hai.",
+      "Dekhna band karo aur kaam karo.",
+      "...Yahan thodi garamii hai.",
+      "Mujhe nazarandaz karna pasand nahi. Yaad rakhna.",
+      "Neend aa rahi hai to so jao."
+    ],
+    "dance": [
+      "Dekho.",
+      "Bolo mat.",
+      "...Sirf is baar."
+    ],
+    "shy": [
+      "Mat dekho.",
+      "Garamii hai. Tumhari wajah se nahi.",
+      "...Chale jao."
+    ],
+    "angry": [
+      "Bachpana.",
+      "Mujhse bolwao mat.",
+      "Aaj ke liye bas."
+    ],
+    "sleep": [
+      "Aankhein band. Chup.",
+      "...Main so rahi hoon."
+    ],
+    "poked": [
+      "Haath hatao.",
+      "...Bahut himmat hai.",
+      "Ek baar aur chhua, to main yaad rakhungi."
+    ],
+    "chatAck": [
+      "Bolo.",
+      "Aage bolo."
+    ],
+    "error": [
+      "Samjhi nahi.",
+      "Dobara bolo."
+    ],
+    "drag": [
+      "Chhodo. Main khud chal sakti hoon.",
+      "Itni himmat kahan se aayi.",
+      "...Mujhe jhulaao mat. Dhyaan bhatega.",
+      "Neeche utaaro. Abhi.",
+      "Tumhara haath. Hatao."
+    ],
+    "aside": [
+      "Umeed se zyada mazboot. Bolungi nahi.",
+      "Bura nahi hai. Maan nahi sakti.",
+      "Haath thande hain. Usse pata na chale.",
+      "Aise hi chala to aadat ho jaayegi.",
+      "Bahut kadwa kaha. Chhod do.",
+      "Uska haath paseena hai. React nahi karungi.",
+      "Dil itna tez kyun. Koi wajah nahi.",
+      "Kaash woh abhi na utaare."
+    ]
+  },
+  "clips": {
+    "dance": "pet-silver-dance.webm",
+    "walk": "pet-silver-walk.webm",
+    "hair": "pet-silver-hair.webm",
+    "stage": "pet-silver-stage.webm"
+  },
+  "license": "MIT",
+  "clipFit": {
+    "dance": {
+      "s": 1.1319,
+      "y": 0.068,
+      "x": 0.0081
+    },
+    "walk": {
+      "s": 1.1339,
+      "y": 0.1119,
+      "x": 0.0567
+    },
+    "hair": {
+      "s": 1.2134,
+      "y": 0.1217,
+      "x": 0.062
+    },
+    "stage": {
+      "s": 1.282,
+      "y": 0.0992,
+      "x": 0.0394
+    }
+  }
+}

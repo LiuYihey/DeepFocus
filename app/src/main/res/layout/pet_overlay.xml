@@ -17,7 +17,7 @@
     android:layout_height="wrap_content">
 
     <!-- 台词气泡（用 translationY 浮在本体上方） -->
-    <com.focusfish.app.pet.PetBubbleView
+    <com.deepfocus.app.pet.PetBubbleView
         android:id="@+id/petBubble"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -25,7 +25,7 @@
         android:visibility="gone" />
 
     <!-- 大肥鱼本体 -->
-    <com.focusfish.app.pet.PetSpriteView
+    <com.deepfocus.app.pet.PetSpriteView
         android:id="@+id/petSprite"
         android:layout_width="160dp"
         android:layout_height="160dp"

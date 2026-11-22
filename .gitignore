@@ -14,6 +14,12 @@ build/
 local.properties
 gradle.properties
 
+# 本地 AI 接入点（含 API Key，**禁止提交**）
+# 开发时把厂商/端点/模型/key 写进 local.ai.properties，
+# 由 tools/db/seed_ai_config.py 灌进设备。
+local.ai.properties
+*.ai.properties
+
 # Signing keys — never commit
 *.jks
 *.keystore
@@ -59,3 +65,16 @@ old/
 
 # Generated / temp
 app_icon_generated.png
+
+# Python（tools/ 下的素材流水线脚本）
+__pycache__/
+*.pyc
+
+# 兄弟项目（FocusCat 是独立仓库，拥有各自的 GitHub 远端）
+# FocusCat 与 DeepFocus 是两个互不相关的 App，禁止把对方的文件混进来。
+# 只锚定仓库根目录，不要用 **/ 前缀 —— 否则任何层级下名为 focuscat
+# 的目录都会被误伤（包括未来本项目自己可能引入的包路径）。
+/FocusCat/
+/focuscat/
+/DeepFocus/
+/deepfocus/

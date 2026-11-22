@@ -13,7 +13,8 @@ android.suppressUnsupportedCompileSdk=35
 # ===== Release 签名配置（可选，仅构建 release APK 时需要）=====
 # 更安全的做法：将下面 4 个属性放到 ~/.gradle/gradle.properties（用户级）
 # 或通过环境变量注入（CI/CD 推荐）
-# FOCUSCAT_STORE_FILE=../focuscat-release.jks
-# FOCUSCAT_STORE_PASSWORD=your_store_password
-# FOCUSCAT_KEY_ALIAS=your_key_alias
-# FOCUSCAT_KEY_PASSWORD=your_key_password
+# 键名与 app/build.gradle.kts 中 signingConfigs 读取的一致（DEEPFOCUS_*）
+# DEEPFOCUS_STORE_FILE=../deepfocus-release.jks
+# DEEPFOCUS_STORE_PASSWORD=your_store_password
+# DEEPFOCUS_KEY_ALIAS=your_key_alias
+# DEEPFOCUS_KEY_PASSWORD=your_key_password

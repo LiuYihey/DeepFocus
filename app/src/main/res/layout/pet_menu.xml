@@ -36,6 +36,17 @@
         android:textSize="14sp" />
 
     <TextView
+        android:id="@+id/menuPlay"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?android:attr/selectableItemBackground"
+        android:paddingHorizontal="18dp"
+        android:paddingVertical="11dp"
+        android:text="逗它玩"
+        android:textColor="#2B3A4A"
+        android:textSize="14sp" />
+
+    <TextView
         android:id="@+id/menuHome"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

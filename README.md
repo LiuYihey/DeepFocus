@@ -1,6 +1,6 @@
-<img src="./logo.png" alt="FocusFish Logo" width="160" />
+<img src="./logo.png" alt="DeepFocus Logo" width="160" />
 
-# FocusFish · 专注大肥鱼
+# DeepFocus · 专注大肥鱼
 
 > 用反思问答挽回注意力，用蓝色大肥鱼陪你专注
 
@@ -11,9 +11,9 @@
 
 ## 它是什么
 
-FocusFish 是一个 Android 专注陪伴 App，由 [FocusCat](https://github.com/LiuYihey/FocusCat) 演进而来 —— 保留了原项目成熟的**双引擎拦截**、**反思问答**、**专注计时**逻辑，把陪伴角色从「专注猫」换成了中文互联网上火起来的 **DeepSeek 蓝色大肥鱼** IP。
+DeepFocus 是一个 Android 专注陪伴 App，由 [FocusCat](https://github.com/LiuYihey/FocusCat) 演进而来 —— 保留了原项目成熟的**双引擎拦截**、**反思问答**、**专注计时**逻辑，把陪伴角色从「专注猫」换成了中文互联网上火起来的 **DeepSeek 蓝色大肥鱼** IP。
 
-原项目 FocusCat 的代码保持零改动，FocusFish 是独立的新工程。
+原项目 FocusCat 的代码保持零改动，DeepFocus 是独立的新工程。
 
 ## 核心特性
 
@@ -21,9 +21,9 @@ FocusFish 是一个 Android 专注陪伴 App，由 [FocusCat](https://github.com
 
 | 能力 | 说明 |
 |------|------|
-| **自定义人格卡** | 7 个可编辑字段（身份/性格/说话风格/口头禅/来历/禁忌/称呼）+ **主动开口动机文案** |
-| **四维状态系统** | 好感度 × 饱腹度 × 精力 × 心情，四维组合出 10 种行为档位（饥饿/吃饱/想被关注/困倦/低落/熟睡…） |
-| **大白饭经济** | 专注满 30 分钟发一份大白饭，好感度升级会解锁不同档位的专属反应 |
+| **人格卡两套包** | 内置 6 张随好感度自动换 + 你自己的自定义卡；改当前卡会跟着换档继承 |
+| **二维状态系统** | 好感度 × 饱腹度，组合出行为档位（饥饿/吃饱/想被关注/熟睡…）；**没有「心情」和「精力」维度** |
+| **大白饭经济** | 专注满 30 分钟发一份大白饭（库存上限 5）；**喂食不涨好感度** |
 | **主动开口** | 按概率掷骰主动找你搭话，触发文案是「她的动机」而不是「系统通知」 |
 | **五种开口由头** | 情绪 / 里程碑 / 联想 / 记忆 / 沉默 —— 不是随机冒泡，是有理由地说话 |
 | **会记事的候选态** | 它从你话里捡到想记的事，先放候选区，**你点头它才真的记住** |
@@ -69,13 +69,12 @@ FocusFish 是一个 Android 专注陪伴 App，由 [FocusCat](https://github.com
 > 为什么不用 Live Wallpaper？因为**切到任何 App 立刻消失** ——
 > 而陪伴的价值恰恰在「你不在时它也在」。
 
-**它跟 App 里的状态是联动的**（这是 FocusFish 相对 dsh-pet 的独有价值）：
+**它跟 App 里的状态是联动的**（这是 DeepFocus 相对 dsh-pet 的独有价值）：
 
 | App 内状态 | 桌宠表现 |
 |---|---|
-| 饱腹度 < 25 | 换成饿相，偶尔冒「……本鲸的白饭呢」 |
+| 距上次喂食超 24 小时 | 换成饿相，偶尔冒「……本鲸的白饭呢」 |
 | 正在睡觉 | 闭眼、呼吸变慢变沉 |
-| 心情低落 | 换成委屈脸 |
 | 好感度高 | 换成得意脸 |
 | 你正在专注 | **不主动说话**，安静陪你 |
 
@@ -103,8 +102,8 @@ FocusFish 是一个 Android 专注陪伴 App，由 [FocusCat](https://github.com
 ## 构建
 
 ```powershell
-git clone https://github.com/LiuYihey/FocusFish.git
-cd FocusFish
+git clone https://github.com/LiuYihey/DeepFocus.git
+cd DeepFocus
 
 # 复制本地配置并改 SDK 路径
 copy gradle.properties.example gradle.properties
@@ -131,11 +130,21 @@ copy gradle.properties.example gradle.properties
 
 ## 素材版权
 
-- 大肥鱼形象基于公开设定特征**原创重制**（呆毛 + 鲸鳍耳 + 蓝渐变发 + 大鲸尾 + 深蓝白配色）
-- 表情包（`assets/stickers/`，48 张）来自 [fisharchive.cc](https://fisharchive.cc)「蓝色大肥鱼档案馆」，二创同人素材
-- 视频（`assets/videos/`，6 段）来自 B 站二创视频
-- 均为**非商业同人素材**，个人使用没问题，**商用需自行取得作者授权**
+- **桌宠动态素材**：来自 [dsh-pet](https://github.com/PC2005-cloud/dsh-pet) 的
+  `assets/webm/*.webm`（640×360 VP9-alpha 母版，转码成 animated WebP）
+  - `assets/pet/anim/all/`（109 段 animated WebP，640×360）
+  - **素材禁止商用**，二创在公开渠道须署名
+- **主形象**：以用户提供的设定图 `大肥鱼.jpg` 为基准**原创生成**，可商用
+  - 立绘 `assets/fish/bigfatfish.png`、无文字大立绘 `assets/stickers/st_{情绪}_big.webp`（11 张）
+  - 视频 `assets/videos/focus/`（专注页背景，9:16 竖版背景友好的规格）
+- 表情包（`assets/stickers/`，共 58 张 = 47 张带文字梗 + 11 张无文字大立绘）
+  中的 47 张带文字梗来自 [fisharchive.cc](https://fisharchive.cc)「蓝色大肥鱼档案馆」，
+  **二创同人素材，CC BY-NC-SA 4.0，禁商用**
+- 内置人格卡正文（`assets/personas/builtin_cards.json`，6 张）来自 dsh 生态的
+  高 star 开源仓库，MIT 许可，署名见 `artwork/persona_sources/MANIFEST.md`
 - 未打包任何 Sketchfab / MakerWorld 的 NC 授权 3D 模型（避免授权风险）
+
+> 素材生成流水线与踩坑记录见 [docs/视频资产清单.md](docs/视频资产清单.md)。
 
 ## 致谢
 

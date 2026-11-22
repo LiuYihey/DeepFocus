@@ -1,4 +1,4 @@
-# FocusFish ProGuard 规则
+# DeepFocus ProGuard 规则
 
 # ===== Room =====
 -keep class * extends androidx.room.RoomDatabase
@@ -31,11 +31,20 @@
 -dontwarn com.google.android.exoplayer2.**
 
 # ===== 应用实体类和 DAO（Room 反射需要） =====
--keep class com.focusfish.app.data.local.entity.** { *; }
--keep class com.focusfish.app.data.local.dao.** { *; }
+-keep class com.deepfocus.app.data.local.entity.** { *; }
+-keep class com.deepfocus.app.data.local.dao.** { *; }
 
 # ===== 保留反射调用的类（Hilt 生成的基类需要） =====
 -keepattributes *Annotation*
 -keepattributes Signature
 -keepattributes InnerClasses
 -keepattributes EnclosingMethod
+
+# ===== 动画动作库 =====
+# 动作 id 是资源文件名的组成部分（{序号}_{id}.webp），
+# 虽然是字符串常量不会被改，但枚举本身要留着，
+# 否则 R8 可能内联掉，导致动作库在运行时拿不到。
+-keep class com.deepfocus.app.pet.PetAction { *; }
+-keep class com.deepfocus.app.pet.PetActionLibrary { *; }
+-keep class com.deepfocus.app.pet.PetActionTag { *; }
+-keep class com.deepfocus.app.data.FishAnimationCatalog { *; }

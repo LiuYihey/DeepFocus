@@ -88,18 +88,6 @@ class PetPlayEngine @Inject constructor(
      */
     private val appearanceBag = ShuffleBag(random)
 
-    /**
-     * 喂食动作的发牌堆（shuffle bag）
-     *
-     * 和登场短剧一样是「一轮之内不重复」。
-     * 能上台的吃的动作有 16 个 —— 只避开最近 6 个的话，
-     * 玩家连着喂 7 次还是可能撞回同一个动作。
-     *
-     * 发牌堆保证「一轮 16 个喂食动作都出现且只出现一次」，
-     * 取完才重新洗牌。
-     */
-    private val feedBag = ShuffleBag(random)
-
     /** 上次恶作剧的时间 */
     private var lastTrickAt = 0L
 
@@ -183,24 +171,16 @@ class PetPlayEngine @Inject constructor(
     // ==================== 具体玩法 ====================
 
     /**
-     * 投喂反馈
+     * 投喂反馈（点击大白饭 / 双击桌宠）
      *
-     * 吃的动作有 17 个，随机挑一个 —— 每次喂食都有新鲜感。
-     *
-     * 用**发牌堆**挑：一轮之内每个能上台的吃的动作只出现一次，
-     * 取完一轮才重新洗牌（见 [feedBag]）。
-     *
-     * 只从**能上台的**动作里挑（[StageCatalog.STAGE_ACTIONS]）：
-     * `dakou-chi-lingshi` 归一化后宽 897px，超过 768px 上限，
-     * 在首页上会显得小一号 —— 舞台上的角色高度必须一致。
+     * 只播「抱着一大碗白饭猛吃」这一个动作 —— 它和「大白饭」是同一件事。
+     * 之前从 FEED 标签里随机抽（冰淇淋、西瓜、粽子…），点白饭却吃西瓜，
+     * 语义对不上。其余吃的动作留给节日 / 环境玩法，不再混进投喂。
      */
     fun onFeed(): PetAction? {
-        val feedIds = PetActionLibrary.ALL
-            .filter { PetActionTag.FEED in it.tags }
-            .filter { it.id in StageCatalog.STAGE_ACTIONS }
-            .map { it.id }
-        val id = feedBag.next(feedIds) ?: return null
-        val action = PetActionLibrary.byId(id) ?: return null
+        val action = PetActionLibrary.byId("chi-baifan")
+            ?.takeIf { it.id in StageCatalog.STAGE_ACTIONS }
+            ?: return null
         remember(action)
         return action
     }

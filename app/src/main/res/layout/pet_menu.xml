@@ -2,7 +2,7 @@
 <!--
   桌宠长按菜单
 
-  刻意做短：只放真正有用的 6 项。
+  刻意做短：只放真正有用的 5 项。
   桌宠用户研究的第一条教训是「91 段动画里用户只会记住 3-5 个」，
   菜单同理 —— 项太多等于没有重点。
 -->
@@ -12,17 +12,6 @@
     android:background="@drawable/pet_menu_background"
     android:orientation="vertical"
     android:paddingVertical="6dp">
-
-    <TextView
-        android:id="@+id/menuSpeak"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="?android:attr/selectableItemBackground"
-        android:paddingHorizontal="18dp"
-        android:paddingVertical="11dp"
-        android:text="说句话"
-        android:textColor="#2B3A4A"
-        android:textSize="14sp" />
 
     <TextView
         android:id="@+id/menuSleep"

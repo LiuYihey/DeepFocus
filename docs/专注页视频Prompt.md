@@ -9,8 +9,8 @@ DeepFocus 大肥鱼专注陪伴 App
 > （[仓库](https://github.com/PC2005-cloud/dsh-pet)），转码成 animated WebP，
 > 体积小、动作多、随装随用。
 >
-> **只有专注页书房还用视频** —— 它要 9:16 全屏铺满、
-> 要有环境音（翻书、鸟鸣、笔尖沙沙），
+> **只有专注页还用视频** —— 它要 9:16 全屏铺满、
+> 不播任何声音（静音循环，不叠环境音），
 > GIF 撑不起这种沉浸感，而且全屏放大会把小图拉糊。
 
 ---
@@ -33,7 +33,141 @@ DeepFocus 大肥鱼专注陪伴 App
 
 ---
 
-## 常服版
+## 旅游版（当前主用 · 慢火车靠窗）
+
+**为什么选「移动中的窗」**
+
+专注页的视频不是 MV，是背景。它要满足三件事：**低频运动、无叙事、能无缝循环**。
+「车窗」天然满足前两条 —— 车外风景负责「在路上」的感觉，
+车厢内几乎静止，形成「动中有静」；窗框还顺手把画面切成两层：
+上层干净留白给计时器，下层坐角色。
+
+不要出现电线杆、树列这类高频重复物 —— 循环接缝会明显「跳」一下。
+让窗外以**大块、低对比、慢速**的田野、远山、海平线、云为主。
+
+**参考图**（一张，直接上传，不要重画）：
+
+```
+D:\___Desktop___\MiniMax\DeepFocus\artwork\refs\whale_focus_view.png
+```
+
+**Prompt（中文 · 整段复制）**：
+
+```text
+画面：一列慢速行驶的火车车厢内，靠窗的座位。大肥鱼保持参考图中的角色形象与画风，侧坐在窗边座位上，身体朝向窗外、略微偏向镜头，深蓝色的鱼尾自然垂在座位边、尾尖轻轻搭在坐垫上。窗边的小桌板上放着一只白瓷杯，杯口冒着细细的热气，桌角放着一顶草帽和一本翻开的旅行笔记。窗外是缓慢后退的夏日风景：大片金色田野、远处低矮的青山、缓慢移动的云，天地对比柔和。车厢内壁是浅木色与奶油色，干净简单。
+
+动作：只有细微的小动作 —— 她安静地看着窗外，偶尔慢慢眨一下眼，风从半开的窗缝吹进来，额前的碎发和头顶的呆毛轻轻摆动；窗帘边缘被风掀起又落下；她偶尔端起杯子抿一口，尾尖随车厢的节奏轻轻晃两下。窗外的风景以极慢的速度横向后退。身体基本不移动。
+
+镜头：固定机位，中景偏全身，人物居中偏下，占画面高度约三分之一到五分之二。画面上方是干净的车窗上缘、柔和的天空和车厢顶，保持大面积留白，什么物体都不要放 —— 计时器要浮在这里。景深轻微，窗外风景轻微虚化，焦点落在角色和杯子上。
+
+氛围：午后阳光斜照进车厢，一片柔和的光斑随着行驶缓慢扫过她的脸和桌面，尘埃在光柱里轻轻浮动。安静、温暖、在路上。
+
+日式动漫插画风格，Q 版二头身比例，干净的粗描边线稿，柔和的赛璐璐上色，扁平淡雅的配色，明亮柔和的光线，高细节。不要混搭其他画风。
+```
+
+**Prompt（英文 · 备用）**：
+
+```text
+A quiet slow-travel train carriage interior, seat by the window. The chubby fish girl keeps the exact character design and art style of the reference image: she sits by the window angled toward the view, her deep-blue tail resting gently on the seat cushion. On the small table: a white porcelain cup with thin steam curling upward, a straw hat and an open travel notebook. Outside the window a calm summer landscape drifts slowly backwards - wide golden fields, distant low green hills, slow clouds. Warm cream and light-wood carriage interior, clean and simple.
+
+Micro-motion only: she blinks slowly, stray hair and a single ahoge sway in the breeze from the half-open window, the curtain edge lifts and settles, steam curls, dust motes float in the sunbeam. She occasionally takes a small sip from the cup; the tail tip sways slightly with the rhythm of the train. The scenery outside moves horizontally at a very slow speed. Her body stays still.
+
+Static camera, medium-wide shot, character centered in the lower third and occupying about one third to two fifths of the frame height. The upper part of the frame is clean - window frame edge, soft sky, carriage ceiling - keep it empty, a timer will be overlaid there. Shallow depth of field, the outside view slightly out of focus, focus on the girl and the cup.
+
+Soft afternoon sunlight, a gentle light patch slides slowly across her face and the table, dust floating in the light. Calm, warm, quietly on the road.
+
+Japanese anime illustration style, chibi two-head-tall proportions, clean bold line art, soft cel shading, flat muted colors, bright soft lighting, high detail. No mixed art styles.
+```
+
+**负向提示**：
+
+```text
+镜头运动, 推拉摇移, 变焦, 转场, 剪切, 角色走动, 大幅挥手, 转身, 人物出画, 身体变形, 换脸, 多余人物, 文字, 字幕, 水印, logo, UI 界面, 快速运动, 闪烁, 高对比, 过曝, 3D 写实, 真人, 赛博朋克, 混合画风, 画面抖动
+```
+
+**参数**：
+
+| 项 | 值 |
+|---|---|
+| 模式 | 图生视频（只传 1 张参考图） |
+| 比例 / 分辨率 | 9:16 · 1080×1920 |
+| 时长 | 20 秒最佳；只能出 5/10 秒也行，播放器会循环 |
+| 帧率 | 24 或 30fps |
+| 运动幅度 | **小 / 低**（即梦选「运动幅度小」，可灵选低动态） |
+| 首尾帧 | 不传；若模型支持单独设尾帧，可把同一张参考图设为尾帧强制闭环（要求同时设首帧的就一起设） |
+| 落地文件名 | `bigfatfish.mp4` |
+
+**循环要点**：
+
+- 出片后掐掉首尾各 0.2–0.3 秒的「起手/收势」帧，再接循环，接缝最不明显。
+- 首尾帧构图差异越小越好；靠「身体不动 + 风景极慢」把接缝藏掉。
+- 声音：不需要。安装脚本会去掉音轨，App 内也强制静音。
+
+**验收标准（旅游版）**：
+
+- [ ] 上方至少 40% 高度是干净的，能放下计时器
+- [ ] 角色形象与参考图一致（深蓝发、常服、深蓝鱼尾、头顶呆毛）
+- [ ] 镜头完全不动，没有推拉摇移
+- [ ] 只有眨眼、发丝、窗帘、热气、尾尖这类微动效，没有大幅动作
+- [ ] 首尾帧几乎一致，循环播放看不出接缝
+- [ ] 没有文字、字幕、水印
+- [ ] 光线暖而不刺眼，画面不抢注意力
+
+---
+
+## 备选主题
+
+### B. 海边露营（篝火夜景）
+
+篝火是天然的循环素材（火焰、火星、烟雾都在周期性运动），
+循环接缝几乎无感，比横向风景更好做。
+
+```text
+画面：夜晚的海边营地，沙滩上支着一顶小帐篷，一串暖黄的小灯挂在帐篷前。大肥鱼保持参考图中的角色形象与画风，坐在折叠椅上，怀里抱着一条薄毯，面前是一小堆篝火。远处是深蓝色的海面和缓慢移动的月光倒影，天上有稀疏的星。画面下方是沙滩与营地，上方是干净的海面和夜空。
+
+动作：只有细微的小动作 —— 火焰轻轻跳动，火星缓缓上升又熄灭，薄烟被海风吹斜；她安静地看着火，偶尔眨一下眼，火光在她的脸和眼睛里晃动，海风把碎发吹起来一点。身体基本不移动。
+
+镜头：固定机位，中景偏全身，人物居中偏下，占画面高度约三分之一。画面上方是大面积干净的海面与夜空，不要放任何物体。景深轻微。
+
+氛围：安静、暖、海风很轻。篝火是画面里唯一明显的动态光源。
+
+日式动漫插画风格，Q 版二头身比例，干净的粗描边线稿，柔和的赛璐璐上色，扁平淡雅的配色，明亮柔和的光线，高细节。不要混搭其他画风。
+```
+
+### C. 夜航舷窗
+
+最安静的一版，适合夜间专注：画面暗、动效少，不打断思路。
+
+```text
+画面：夜间航班的机舱内，大肥鱼保持参考图中的角色形象与画风，坐在靠窗的座位上，身上盖着一条薄毯，头轻轻靠着舷窗边缘。舷窗是圆角椭圆，窗外是深蓝色的夜空和缓慢流过的云层，机翼上有一盏很小的航行灯在缓慢闪烁。座位旁的小桌板上放着一杯温水。舱内只有一盏小小的阅读灯亮着，暖黄色。
+
+动作：只有细微的小动作 —— 她偶尔眨一下眼，呼吸让肩膀极轻地起伏，毯子边缘微微滑动；窗外的云以极慢的速度向后流，航行灯缓慢明灭。身体基本不移动。
+
+镜头：固定机位，中景偏全身，人物居中偏下，占画面高度约三分之一。画面上方是干净的舱顶和舷窗上缘，大面积留白。景深轻微，窗外轻微虚化。
+
+氛围：安静、昏暗、有点困。像红眼航班上有人陪你一起熬。
+
+日式动漫插画风格，Q 版二头身比例，干净的粗描边线稿，柔和的赛璐璐上色，扁平淡雅的配色，柔和的光线，高细节。不要混搭其他画风。
+```
+
+### D. 山间民宿的清晨阳台
+
+```text
+画面：山间民宿的木质阳台，清晨。大肥鱼保持参考图中的角色形象与画风，坐在藤椅上，面前的小圆桌上放着一杯热茶和一盘切好的水果。栏杆外是层层叠叠的青山和缓慢流动的晨雾，远处有几只鸟掠过。阳台边挂着一串风铃。
+
+动作：只有细微的小动作 —— 晨雾缓慢流动，风铃轻轻晃动，热茶冒出的白气被风吹散，她的碎发和呆毛被风掀起又落下，偶尔眨一下眼、端起杯子。身体基本不移动。
+
+镜头：固定机位，中景偏全身，人物居中偏下，占画面高度约三分之一。画面上方是干净的天空与远山，大面积留白。景深轻微。
+
+氛围：清冷、干净、空气很好。像旅行第二天早上醒来的那一刻。
+
+日式动漫插画风格，Q 版二头身比例，干净的粗描边线稿，柔和的赛璐璐上色，扁平淡雅的配色，明亮柔和的光线，高细节。不要混搭其他画风。
+```
+
+---
+
+## 常服版（书房 · 旧版留档）
+
 
 **参考图**（一张，直接上传，不要重画）：
 
@@ -99,8 +233,7 @@ python tools\media\install_videos.py
 ```
 
 > 安装脚本会：压缩到 H.264 baseline + yuv420p（Android 兼容）→
-> 叠一层环境音（`tools/media/ambience.mp3`，首尾各淡入淡出 0.3 秒，
-> 循环时不爆音）→ 装进 `app/src/main/assets/videos/focus/`。
+> 去掉音轨（专注页不播任何声音）→ 装进 `app/src/main/assets/videos/focus/`。
 
 ---
 
@@ -127,6 +260,5 @@ DeepFocus/
       bigfatfish.mp4        常服
       bigfatfish_winter.mp4 冬装（可选）
   tools/media/
-    ambience.mp3          环境音（已有）
-    install_videos.py     压缩 + 叠环境音 + 安装
+    install_videos.py     压缩 + 去音轨 + 安装
 ```

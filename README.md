@@ -1,132 +1,160 @@
-<img src="./logo.png" alt="DeepFocus Logo" width="160" />
-
-# DeepFocus · 专注大肥鱼
-
-> 用反思问答挽回注意力，用蓝色大肥鱼陪你专注
-
-一只住在手机里的蓝色大肥鱼，靠陪你专注换**大白饭**吃。
-它会摸鱼、会饿、会犯困、会记得你说过的话，也会在你没理它的时候自己冒泡。
+<img src="./logo.png" alt="DeepFocus Logo" width="100%" />
+<h1 align="center">DeepFocus · 深焦</h1>
+<p align="center">
+  <strong>一条大肥鱼陪你专注，专注攒下的白饭喂给它</strong>
+</p>
+<p align="center">
+  <a href="https://github.com/LiuYihey/DeepFocus/releases">下载 APK</a>
+  ·
+  <a href="docs/桌宠设计.md">桌宠设计</a>
+  ·
+  <a href="docs/专注页视频Prompt.md">专注视频 Prompt</a>
+</p>
 
 ---
 
-## 它是什么
+## 简介
 
-DeepFocus 是一个 Android 专注陪伴 App，由 [FocusCat](https://github.com/LiuYihey/FocusCat) 演进而来 —— 保留了原项目成熟的**双引擎拦截**、**反思问答**、**专注计时**逻辑，把陪伴角色从「专注猫」换成了中文互联网上火起来的 **DeepSeek 蓝色大肥鱼** IP。
+想专注，却总在「再看一眼」里把一下午看没了？
 
-原项目 FocusCat 的代码保持零改动，DeepFocus 是独立的新工程。
+**DeepFocus（深焦）** 把专注做成一件事：你坐得住，鱼就有饭吃。
 
-## 核心特性
+- **专注计时** — 全屏旅行影像 + 计时器，进入即开始，不用配置一堆参数
+- **大白饭奖励** — 每专注 30 分钟攒 1 份大白饭，单次最多 5 份
+- **大肥鱼养成** — 投喂、好感度、成就；点一下白饭，它真的抱着碗吃
+- **桌面陪伴** — 悬浮桌宠安静待在屏幕上，不自己乱跑，也不随机说话
+- **AI 对话** — 自带人格卡，也可以接任意 OpenAI 兼容 API；它会记得你们聊过什么
+- **游历本** — 专注满 15 分钟，它会出门旅行，带回一篇日记和一张插画
+- **应用守护**（可选）— 专注时切去娱乐 App，会被温柔地拉回来
 
-### 🐟 会活的大肥鱼
+把「硬撑」变成「有人在等你回家吃饭」。
 
-| 能力 | 说明 |
+<p align="center">
+  <img src="./docs/screenshots/home.png" width="30%" alt="首页" />
+  &nbsp;&nbsp;
+  <img src="./docs/screenshots/focus.png" width="30%" alt="专注页" />
+</p>
+
+---
+
+## 功能亮点
+
+| 功能 | 说明 |
 |------|------|
-| **人格卡两套包** | 内置 6 张随好感度自动换 + 你自己的自定义卡；改当前卡会跟着换档继承 |
-| **二维状态系统** | 好感度 × 饱腹度，组合出行为档位（饥饿/吃饱/想被关注/熟睡…）；**没有「心情」和「精力」维度** |
-| **大白饭经济** | 专注满 30 分钟发一份大白饭（库存上限 5）；**喂食不涨好感度** |
-| **主动开口** | 按概率掷骰主动找你搭话，触发文案是「她的动机」而不是「系统通知」 |
-| **五种开口由头** | 情绪 / 里程碑 / 联想 / 记忆 / 沉默 —— 不是随机冒泡，是有理由地说话 |
-| **会记事的候选态** | 它从你话里捡到想记的事，先放候选区，**你点头它才真的记住** |
-| **陪读** | 你专注时它自己一页一页读你导入的书，结束后给你感悟 |
-| **世界感知** | 知道你今天用了哪些 App、各用了多久、专注了多久 |
-| **会休眠** | 每天知道自己睡了多久，醒来会犯迷糊 |
+| 专注计时 | 全屏 9:16 旅行影像循环播放，静音，不打扰 |
+| 大白饭 | 每满 30 分钟 +1 份，单次专注最多 5 份 |
+| 投喂 | 点击大白饭 → 播放「抱碗猛吃」专属动画，消耗 1 份并增加好感度 |
+| 桌宠 | 1:1 跟手拖动、四档尺寸；不点击就停在原地，不随机冒台词 |
+| 桌宠消息 | 只有 Agent 主动消息会冒气泡；TODO 催办走通知栏 |
+| AI 对话 | 支持文字 / 图片；发图后可以先写配文，再一起发送 |
+| 人格卡 | 内置 6 张卡，可按好感度解锁；也可自己写一张 |
+| 游历本 | 专注满 15 分钟触发旅行，生成目的地、日记与插画 |
+| 应用守护 | 无障碍 + 使用情况访问，检测到分心 App 时拉起反思页 |
+| 数据本地 | 聊天、记忆、鱼的状态全部存在本机 SQLite |
 
-### 🔌 多 Provider 支持
+---
 
-不绑定任何厂商，所有 OpenAI 兼容端点都能接。内置 14 个预设：
+## 下载安装
 
-`DeepSeek` · `Kimi` · `通义千问` · `智谱 GLM` · `MiniMax` · `硅基流动` · `豆包` · `腾讯混元` · `百度千帆` · `讯飞星火` · `OpenAI` · `Groq` · `本地 Ollama` · `自定义`
+### 方式一：直接安装 APK（推荐）
 
-- 密钥用 **Android Keystore AES-GCM** 加密后只存在本机
-- 推理模型（o 系列 / gpt-5 / deepseek-reasoner）自动切 `max_completion_tokens` 并跳过 `temperature`
-- MiniMax 这类非标准路径的厂商已预填正确地址
-- 内置「测试连接」按钮，秒验地址/密钥/模型名对不对
+从 [GitHub Releases](https://github.com/LiuYihey/DeepFocus/releases) 下载最新版 `DeepFocus-v1.0.0.apk`，在 Android 手机上安装即可。
 
-### 🛡️ 拦截与约束
+> 首次安装需在系统设置中允许「安装未知来源应用」。
 
-沿用 FocusCat 的成熟方案：
+### 方式二：自行编译
 
-- **双引擎拦截**：无障碍服务 + 前台轮询，兼容各厂商 ROM
-- 打开约束 App → 反思问答 → 选择退出 → 弹出**大肥鱼表情包鼓励** → 把你送回桌面
-- 专注模式下切屏检测，离开即提醒
+#### 环境要求
 
-### 🐾 桌面桌宠
+- Android Studio Hedgehog (2023.1.1) 或更高版本
+- JDK 17
+- Android SDK（compileSdk 35）
+- Windows / macOS / Linux
 
-像 dsh 电脑版那样的桌面电子宠物，常驻在手机桌面 —— 你在别的 App 里摸鱼的时候，它也飘在旁边盯着你。
+#### 构建步骤
 
-| 交互 | 反应 |
-|---|---|
-| 点它 | Q 弹挤压 + 随机表情 + 台词气泡 |
-| 双击 | 投喂大白饭 |
-| 按住拖动 | **弹簧跟手**（不是硬贴），侧身朝向拖动方向，松手说话 |
-| 快速甩一下 | 抛物线飞行，撞屏幕边缘反弹，落地摩擦减速 |
-| 自主散步 | 沿屏幕底部走，走到边界掉头 |
-| 贴边 | 拖到边缘自动贴上，静置 12 秒缩进去只露半个身子，碰一下探出 |
-| 长按 | 菜单：说句话 / 睡觉 / 回到右上角 / 换个方向 / 藏起来 / 关闭 |
+```bash
+# 1. 克隆仓库
+git clone git@github.com:LiuYihey/DeepFocus.git
+cd DeepFocus
 
-**技术路线**：Overlay 悬浮窗（`TYPE_APPLICATION_OVERLAY`）+ 前台服务。
+# 2. 配置本地 SDK 路径（Android Studio 通常会自动生成）
+# 创建 local.properties，内容示例：
+# sdk.dir=C\:\\Users\\YourName\\AppData\\Local\\Android\\Sdk
 
-> 为什么不用 Live Wallpaper？因为**切到任何 App 立刻消失** ——
-> 而陪伴的价值恰恰在「你不在时它也在」。
+# 3. （可选）配置 release 签名
+cp gradle.properties.example gradle.properties
+# 编辑 gradle.properties，填入 DEEPFOCUS_STORE_FILE / PASSWORD / KEY_ALIAS
 
-**它跟 App 里的状态是联动的**（这是 DeepFocus 相对 dsh-pet 的独有价值）：
+# 4. 构建 Debug 版（无需签名，适合开发调试）
+./gradlew assembleDebug
+# Windows: gradlew.bat assembleDebug
 
-| App 内状态 | 桌宠表现 |
-|---|---|
-| 距上次喂食超 24 小时 | 换成饿相，偶尔冒「……本鲸的白饭呢」 |
-| 正在睡觉 | 闭眼、呼吸变慢变沉 |
-| 好感度高 | 换成得意脸 |
-| 你正在专注 | **不主动说话**，安静陪你 |
+# 5. 构建 Release 版（需配置签名密钥）
+./gradlew assembleRelease
+# 产物路径：app/build/outputs/apk/release/app-release.apk
+```
 
-物理参数照搬 dsh-pet 电脑版：弹簧 K=200 / C=30、重力 1400、落地恢复 0.78、地面摩擦 2.5。
+---
 
-设计细节见 [docs/桌宠设计.md](docs/桌宠设计.md)。
+## 首次使用权限
+
+核心的专注与养成不需要任何危险权限；只有「应用守护」需要下面几项：
+
+| 权限 | 用途 |
+|------|------|
+| 使用情况访问 | 判断当前前台是不是被约束的娱乐 App |
+| 无障碍服务 | 检测应用切换，触发反思页 |
+| 悬浮窗 | 显示桌宠与拦截页 |
+| 通知（Android 13+） | TODO 催办、前台服务保活 |
+| 电池优化白名单 | 避免系统杀掉后台守护服务 |
+
+> 应用守护是可选的。只想计时和养鱼，不开也能正常用。
 
 ---
 
 ## 技术栈
 
-| 项 | 版本 |
-|---|---|
-| Kotlin | 1.9.25 |
-| AGP / Gradle | 8.3.2 / 8.4 |
-| Compose BOM | 2024.09.03 |
-| Hilt | 2.51 |
-| Room | 2.6.1 (KSP) |
-| Media3 ExoPlayer | 1.2.1 |
-| minSdk / targetSdk / compileSdk | 26 / 35 / 35 |
-| JDK | 17 |
+- **语言**：Kotlin
+- **UI**：Jetpack Compose + Material 3
+- **架构**：MVVM + Hilt 依赖注入
+- **数据库**：Room（KSP）
+- **视频**：Media3 ExoPlayer（专注页静音循环）
+- **图片**：Coil 未引入，贴图走 assets + 自绘 Canvas
+- **最低系统**：Android 8.0（API 26）
+- **目标系统**：Android 15（API 35）
 
-网络层是手写的 `HttpURLConnection` + SSE 流式解析，不引入第三方网络库 —— 少一个依赖就少一份体积。
+---
 
-## 构建
+## 项目结构
 
-```powershell
-git clone https://github.com/LiuYihey/DeepFocus.git
-cd DeepFocus
-
-# 复制本地配置并改 SDK 路径
-copy gradle.properties.example gradle.properties
-# 编辑 local.properties 填 sdk.dir
-
-.\gradlew.bat :app:assembleDebug
+```
+DeepFocus/
+├── app/                        # 主应用模块
+│   ├── src/main/java/          # Kotlin 源码
+│   ├── src/main/assets/        # 桌宠动画、表情包、专注视频、人格卡
+│   └── src/main/res/           # 资源与 Manifest
+├── artwork/                    # 素材源文件与生成脚本的输入
+├── tools/                      # 素材处理脚本（Python）
+├── docs/                       # 设计文档与截图
+├── archive/                    # 归档：旧工具、旧素材、历史测试与截图
+├── logo.png                    # 项目 Logo
+├── build.gradle.kts            # 顶层构建配置
+├── settings.gradle.kts         # 模块配置
+├── gradle.properties.example   # 签名配置模板（不含密钥）
+└── gradlew.bat                 # Windows 构建脚本
 ```
 
-产物：`app/build/outputs/apk/debug/app-debug.apk`
+---
 
-签名配置见 [gradle.properties.example](gradle.properties.example)（把签名属性放到 `~/.gradle/gradle.properties`，**不要**提交到仓库）。
+## 隐私
 
-## 权限说明
+- **所有数据都存在本机。** App 不上传聊天记录、记忆、专注数据。
+- API Key 只保存在本地 SharedPreferences / 数据库，不经过任何中转服务器。
+- 相册图片只在发送时压缩后随请求发给你自己配置的模型服务。
+- 没有埋点、没有统计 SDK、没有广告。
 
-| 权限 | 用途 | 可选 |
-|------|------|------|
-| 无障碍服务 | 拦截约束应用 | 必需 |
-| 使用情况访问 | 统计今日各 App 使用时长 | 必需 |
-| 悬浮窗 | 桌宠显示在其他应用上层 | 桌宠功能必需 |
-| 通知 | 桌宠前台服务 | 桌宠功能必需 |
-| 联网 | 调用你自填的 AI API | 必需 |
-
-**所有数据都存在本机。** App 不上传任何数据，聊天记录、记忆、大肥鱼状态全在本地 SQLite 里。
+---
 
 ## 素材版权
 
@@ -136,7 +164,7 @@ copy gradle.properties.example gradle.properties
   - **素材禁止商用**，二创在公开渠道须署名
 - **主形象**：以用户提供的设定图 `大肥鱼.jpg` 为基准**原创生成**，可商用
   - 立绘 `assets/fish/bigfatfish.png`、无文字大立绘 `assets/stickers/st_{情绪}_big.webp`（11 张）
-  - 视频 `assets/videos/focus/`（专注页背景，9:16 竖版背景友好的规格）
+  - 视频 `assets/videos/focus/`（专注页背景，9:16 竖版，当前为「夜间航班」）
 - 表情包（`assets/stickers/`，共 58 张 = 47 张带文字梗 + 11 张无文字大立绘）
   中的 47 张带文字梗来自 [fisharchive.cc](https://fisharchive.cc)「蓝色大肥鱼档案馆」，
   **二创同人素材，CC BY-NC-SA 4.0，禁商用**
@@ -149,7 +177,7 @@ copy gradle.properties.example gradle.properties
 ## 致谢
 
 - [FocusCat](https://github.com/LiuYihey/FocusCat) —— 本项目的地基，双引擎拦截与专注逻辑来自它
-- [dsh-pet](https://github.com/PC2005-cloud/dsh-pet) —— 桌宠交互与物理参数的蓝本（5.5k★ MIT）
+- [dsh-pet](https://github.com/PC2005-cloud/dsh-pet) —— 桌宠动作库与交互思路的蓝本
 - [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) —— dsh 插件生态本体
 - [dsh-speak-up](https://github.com/Yuuyoko-uu/dsh-speak-up) —— 主动开口的命中线公式
 - [dsh-whale-musume](https://github.com/Sutera-Diffusus/dsh-whale-musume) —— 双档冷却与本地台词库的思路
@@ -160,10 +188,6 @@ copy gradle.properties.example gradle.properties
 
 代码以 MIT 协议开源。素材部分不适用 MIT，请遵守各自来源的授权。
 
-## 合规
-
-本 App 遵循《人工智能拟人化互动服务管理暂行办法》：
-- 显著提示用户正在与 AI 而非自然人交互（聊天页顶部）
-- 提供便捷退出途径，不阻碍用户离开
-- 交互数据本地加密存储，不向第三方提供
-- 不将「替代社会交往」作为产品设计目标
+<p align="center">
+  <sub>Made with 🐟 by LiuYihey</sub>
+</p>

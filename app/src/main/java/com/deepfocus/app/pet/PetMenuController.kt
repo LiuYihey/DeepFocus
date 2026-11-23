@@ -22,7 +22,6 @@ import kotlin.math.roundToInt
  * 「91 段动画里用户只会记住 3-5 个」）。
  *
  * 菜单项：
- * - 说句话（让它冒个泡）
  * - 睡觉 / 醒来
  * - 回到原位
  * - 换个方向
@@ -35,9 +34,6 @@ class PetMenuController(
 ) {
 
     interface Listener {
-        /** 让桌宠说句话 */
-        fun onMenuSpeak()
-
         /** 切换睡觉状态 */
         fun onMenuToggleSleep()
 
@@ -62,11 +58,12 @@ class PetMenuController(
     /**
      * 显示菜单
      *
+     * @param anchor 已挂在 WindowManager 上的桌宠窗口 View（PopupWindow 需要它的 window token）
      * @param anchorX 屏幕坐标 X
      * @param anchorY 屏幕坐标 Y
      */
     @SuppressLint("InflateParams")
-    fun show(anchorX: Int, anchorY: Int) {
+    fun show(anchor: View, anchorX: Int, anchorY: Int) {
         dismiss()
 
         val root = LayoutInflater.from(context).inflate(R.layout.pet_menu, null)
@@ -84,10 +81,6 @@ class PetMenuController(
             elevation = 12f * context.resources.displayMetrics.density
         }
 
-        root.findViewById<View>(R.id.menuSpeak).setOnClickListener {
-            listener.onMenuSpeak()
-            dismiss()
-        }
         root.findViewById<View>(R.id.menuSleep).setOnClickListener {
             listener.onMenuToggleSleep()
             dismiss()
@@ -114,9 +107,11 @@ class PetMenuController(
         }
 
         popup = window
-        // 锚点定位到桌宠附近，注意 PopupWindow 用的是绝对屏幕坐标
+        // 锚点定位到桌宠附近，注意 PopupWindow 用的是绝对屏幕坐标。
+        // 第一个参数必须传**已经挂在窗口上**的 View —— 服务里没有 Activity，
+        // 传 null token 会直接抛 BadTokenException 把整个进程带崩。
         window.showAtLocation(
-            root,
+            anchor,
             Gravity.NO_GRAVITY,
             (anchorX - dp(60)).coerceAtLeast(0),
             (anchorY - dp(180)).coerceAtLeast(0)

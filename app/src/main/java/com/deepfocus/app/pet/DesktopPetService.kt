@@ -15,7 +15,6 @@ import com.deepfocus.app.MainActivity
 import com.deepfocus.app.R
 import com.deepfocus.app.ai.FishMoodResolver
 import com.deepfocus.app.ai.FishStateEngine
-import com.deepfocus.app.ai.LocalLineLibrary
 import com.deepfocus.app.data.local.entity.FishStateEntity
 import com.deepfocus.app.util.FocusSessionState
 import dagger.hilt.EntryPoint
@@ -78,15 +77,6 @@ class DesktopPetService : Service() {
         /** 状态轮询间隔（ms）—— 每 3 秒看一眼大肥鱼的状态 */
         private const val STATE_POLL_INTERVAL_MS = 3_000L
 
-        /** 主动冒泡检查间隔（ms）—— 每 2 分钟试一次 */
-        private const val SPEAK_CHECK_INTERVAL_MS = 120_000L
-
-        /** 主动冒泡冷却（ms）—— 20 分钟，避免烦人 */
-        private const val SPEAK_COOLDOWN_MS = 20 * 60 * 1000L
-
-        /** 专注提醒冷却（ms）—— 10 分钟，提醒比闲聊主动但也不能连着刷 */
-        private const val NUDGE_COOLDOWN_MS = 10 * 60 * 1000L
-
         /** AI 台词最短长度：太短不像人话 */
         private const val MIN_SPEECH_LEN = 2
 
@@ -95,6 +85,12 @@ class DesktopPetService : Service() {
 
         /** Intent Action */
         const val ACTION_TOGGLE = "com.deepfocus.app.action.TOGGLE_PET"
+
+        /** 修改桌宠尺寸（设置页用，不重建窗口） */
+        const val ACTION_SET_SIZE = "com.deepfocus.app.action.SET_PET_SIZE"
+
+        /** 尺寸档位（dp） */
+        const val EXTRA_SIZE_DP = "size_dp"
 
         /**
          * 启动桌宠服务
@@ -121,6 +117,22 @@ class DesktopPetService : Service() {
                 context.stopService(Intent(context, DesktopPetService::class.java))
             } catch (e: Exception) {
                 // 忽略
+            }
+        }
+
+        /**
+         * 实时修改桌宠尺寸
+         *
+         * 服务没在跑时什么都不做 —— 用户下次开桌宠会从 prefs 读新尺寸。
+         */
+        fun setSize(context: Context, sizeDp: Int) {
+            try {
+                val intent = Intent(context, DesktopPetService::class.java)
+                    .setAction(ACTION_SET_SIZE)
+                    .putExtra(EXTRA_SIZE_DP, sizeDp)
+                context.startService(intent)
+            } catch (e: Exception) {
+                Log.w(TAG, "修改桌宠尺寸失败", e)
             }
         }
     }
@@ -182,14 +194,8 @@ class DesktopPetService : Service() {
      */
     private var lastKnownPosition: Pair<Int, Int>? = null
 
-    /** 上次主动冒泡时间 */
-    private var lastSpeakAt = 0L
-
     /** 上次显示的姿态，避免每 3 秒重复切贴图 */
     private var currentPose: PetSpriteLibrary.Pose? = null
-
-    /** 上次主动提醒的时间（专注提醒单独算冷却） */
-    private var lastNudgeAt = 0L
 
     /** 已经播报过的 AI 消息 id，避免同一条反复弹气泡 */
     private var lastSpokenMessageId: Long = -1L
@@ -231,19 +237,16 @@ class DesktopPetService : Service() {
 
         val ctl = PetWindowController(this, object : PetWindowController.Listener {
             override fun onPetClicked() {
-                // 摸头：先给个动作反馈，再说话
+                // 摸头：只给动作反馈，不冒随机台词、也不打开 App
+                // （用户 2026-11-22：点击误触进 App 太频繁）
                 playEngine.onUserInteraction()
                 playEngine.onPet()?.let { playAction(it) }
-                speakRandomLine()
-                openChat()
             }
 
             override fun onPetDoubleClicked() {
                 // 投喂：吃的动作全在动作库里，随机挑一个
                 playEngine.onUserInteraction()
                 playEngine.onFeed()?.let { playAction(it) }
-                speakRandomLine()
-                openFeeding()
             }
 
             override fun onPetLongPressed() {
@@ -254,23 +257,6 @@ class DesktopPetService : Service() {
                 savePosition(x, y)
             }
 
-            override fun onPetFlung() {
-                // 甩出去了：落地后播「被压扁 → 弹起跑掉」的两段反馈
-                playEngine.onUserInteraction()
-                playLandedSequence()
-            }
-
-            override fun onPetReachedEdge(edge: PetWindowController.Edge) {
-                // 贴边时可能冒一句
-                if (Math.random() < 0.3) {
-                    speakRandomLine()
-                }
-            }
-
-            override fun onPetSpeakRequest(): String? {
-                return null
-            }
-
             override fun onPetStateChanged(state: PetWindowController.PetState) {
                 Log.d(TAG, "状态切换：$state")
             }
@@ -278,10 +264,6 @@ class DesktopPetService : Service() {
 
         controller = ctl
         menuController = PetMenuController(this, object : PetMenuController.Listener {
-            override fun onMenuSpeak() {
-                speakRandomLine()
-            }
-
             override fun onMenuToggleSleep() {
                 sleeping = !sleeping
                 controller?.setSleeping(sleeping)
@@ -290,9 +272,6 @@ class DesktopPetService : Service() {
                 } else {
                     PetSpriteLibrary.Pose.IDLE
                 }
-                controller?.showBubble(
-                    if (sleeping) "……zzz" else "唔……醒了。"
-                )
                 // 睡/醒都用动作库里的对应动作
                 val action = if (sleeping) playEngine.onSleep() else playEngine.onWake()
                 action?.let { playAction(it) }
@@ -311,10 +290,8 @@ class DesktopPetService : Service() {
                         PetActionTag.FEED
                     )
                 )
-                if (action == null) {
-                    controller?.showBubble("唔……")
-                    return
-                }
+                // 动作库为空时不冒台词 —— 桌宠只在 agent 主动输出时说话。
+                if (action == null) return
                 playAction(action)
             }
 
@@ -374,9 +351,18 @@ class DesktopPetService : Service() {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        if (intent?.action == ACTION_TOGGLE) {
-            stopSelf()
-            return START_NOT_STICKY
+        when (intent?.action) {
+            ACTION_TOGGLE -> {
+                stopSelf()
+                return START_NOT_STICKY
+            }
+            ACTION_SET_SIZE -> {
+                val dp = intent.getIntExtra(EXTRA_SIZE_DP, petSizeDp)
+                    .coerceIn(PetWindowController.MIN_SIZE_DP, PetWindowController.MAX_SIZE_DP)
+                petSizeDp = dp
+                controller?.resize(dp)
+                return START_STICKY
+            }
         }
         return START_STICKY
     }
@@ -402,17 +388,12 @@ class DesktopPetService : Service() {
     private fun startRenderLoop() {
         renderJob?.cancel()
         renderJob = renderScope.launch {
-            var last = System.currentTimeMillis()
             while (isActive) {
-                val now = System.currentTimeMillis()
-                val delta = now - last
-                last = now
                 controller?.let { ctl ->
                     // 窗口没挂着（在别的应用里 / 用户隐藏了）就别算了，
                     // 省点电。重新显示时位置从 lastKnownPosition 复位。
                     if (!ctl.isShowing()) return@let
-                    ctl.advance(delta / 1000f)
-                    ctl.tick(delta)
+                    ctl.tick()
                 }
                 delay(FRAME_INTERVAL_MS)
             }
@@ -433,8 +414,6 @@ class DesktopPetService : Service() {
                     val state = loadFishState()
                     stateJobAffinity = currentAffinity()
                     applyState(state)
-                    maybeSpeakProactively()
-                    maybeNudgeFocus()
                     checkAmbientPlay()
                 } catch (e: kotlinx.coroutines.CancellationException) {
                     throw e
@@ -477,6 +456,9 @@ class DesktopPetService : Service() {
         val ctl = controller ?: return
         val shouldShow = homeScreenAllowed && !petHidden && userEnabled
         if (!shouldShow) {
+            // 收起来前记下当前位置 —— 桌宠散步是直接改坐标的，
+            // 不记的话下次现身会跳回上一次拖拽的位置。
+            if (ctl.isShowing()) lastKnownPosition = ctl.currentPosition()
             ctl.hideSafely()
             return
         }
@@ -490,6 +472,10 @@ class DesktopPetService : Service() {
             ?: prefs.getInt(KEY_POS_Y, -1).takeIf { it >= 0 }
         // 这里跑在 Dispatchers.Default 上，不能直接动 WindowManager
         ctl.showSafely(petSizeDp, sx, sy)
+        // 窗口被整块移除后重建的是一个全新的 PetSpriteView（默认空白）。
+        // 服务层的 currentPose 没变，setPose 的「同姿态跳过」会挡住下发，
+        // 结果就是回到桌面时窗口在、但里面什么都没有 —— 这里强制补一次姿态。
+        currentPose?.let { ctl.setPose(it) }
     }
 
     /**
@@ -561,7 +547,6 @@ class DesktopPetService : Service() {
         }
         // controller 内部会把 View 操作切回主线程
         ctl.showBubble(trimmed)
-        lastSpeakAt = System.currentTimeMillis()
     }
 
     /**
@@ -593,8 +578,7 @@ class DesktopPetService : Service() {
             "害羞" to setOf(PetActionTag.MOOD),
             "开心" to setOf(PetActionTag.MOOD),
             "生气" to setOf(PetActionTag.MOOD),
-            "困" to setOf(PetActionTag.SLEEP),
-            "饿" to setOf(PetActionTag.FEED)
+            "困" to setOf(PetActionTag.SLEEP)
         )
         for ((keyword, tags) in rules) {
             if (text.contains(keyword)) {
@@ -666,7 +650,6 @@ class DesktopPetService : Service() {
         event.actionId?.let { id ->
             PetActionLibrary.byId(id)?.let { playAction(it) }
         }
-        lastSpeakAt = System.currentTimeMillis()
     }
 
     /** 统一切姿态（避免与状态轮询打架） */
@@ -683,24 +666,6 @@ class DesktopPetService : Service() {
      */
     private fun playAction(action: PetAction) {
         controller?.playAction(action)
-    }
-
-    /**
-     * 落地反馈序列
-     *
-     * 甩飞 → 落地被压扁 → 弹起跑掉。
-     * 两段动作接起来，观感是完整的物理反馈。
-     */
-    private fun playLandedSequence() {
-        val seq = playEngine.onLanded()
-        if (seq.isEmpty()) return
-        val first = seq.first()
-        controller?.playAction(first) {
-            // 第一段播完接第二段
-            seq.getOrNull(1)?.let { next ->
-                controller?.playAction(next)
-            }
-        }
     }
 
     /**
@@ -822,112 +787,14 @@ class DesktopPetService : Service() {
     }
 
     /**
-     * 主动冒泡
-     *
-     * 双轨设计（桌宠用户研究的核心教训）：
-     * - 本地台词：零 token，随时可冒泡
-     * - AI 台词：走 API，需要用户已配置 API
-     *
-     * 无论哪种，20 分钟冷却 —— 吵一点就翻车。
-     */
-    private suspend fun maybeSpeakProactively() {
-        val ctl = controller ?: return
-        val now = System.currentTimeMillis()
-        if (lastSpeakAt > 0 && now - lastSpeakAt < SPEAK_COOLDOWN_MS) return
-
-        // 用户正在专注时不打扰
-        if (FocusSessionState.isActive) return
-
-        // 概率触发（5%）—— 不是每次检查都冒泡
-        if (Math.random() > 0.05) return
-
-        val line = LocalLineLibrary.line(LocalLineLibrary.Scene.IDLE)
-        if (line.isNotBlank()) {
-            ctl.showBubble(line)
-            lastSpeakAt = now
-        }
-    }
-
-    /**
-     * 提醒主人去专注
-     *
-     * 触发时机：用户已经一段时间没专注了，而且 App 也开着（说明人在摸鱼）。
-     * 桌宠这时候跳出来催一下，比 App 里的横幅管用得多 ——
-     * 桌宠是「陪伴者」视角，提醒显得像关心而不是管教。
-     */
-    private suspend fun maybeNudgeFocus() {
-        val ctl = controller ?: return
-        val now = System.currentTimeMillis()
-
-        // 正在专注中不提醒
-        if (FocusSessionState.isActive) return
-        if (sleeping) return
-        // 冷却：10 分钟一条
-        if (lastNudgeAt > 0 && now - lastNudgeAt < NUDGE_COOLDOWN_MS) return
-
-        // 今天已经专注得够多了，不打扰
-        val todayMinutes = todayFocusMinutes()
-        if (todayMinutes >= 120) return
-
-        // 随机性：每次检查只有 20% 概率真提醒，避免机械感
-        if (Math.random() > 0.2) return
-
-        val line = if (todayMinutes > 0) {
-            "今天已经专注了 $todayMinutes 分钟啦，要不要再加一段？"
-        } else {
-            "今天还没开始呢，要不要来一段？"
-        }
-        setPose(PetSpriteLibrary.Pose.CHEER)
-        ctl.showBubble(line)
-        lastNudgeAt = now
-        lastSpeakAt = now
-
-        // 提醒完回到常态
-        serviceScope.launch {
-            delay(6_000)
-            if (currentPose == PetSpriteLibrary.Pose.CHEER) {
-                setPose(PetSpriteLibrary.Pose.IDLE)
-            }
-        }
-    }
-
-    /**
-     * 今日已专注分钟数
-     *
-     * 直接读 focus_sessions 表，而不是靠内存状态 ——
-     * 进程重启后这个数字还在，桌宠才能说出「今天已经专注了 45 分钟」。
-     */
-    private suspend fun todayFocusMinutes(): Int {
-        return try {
-            val db = com.deepfocus.app.data.local.AppDatabase.getInstance(this)
-            val startOfDay = startOfTodayMillis()
-            val sessions = db.focusSessionDao().getSessionsByDateRange(startOfDay, nowMillis())
-            (sessions.sumOf { it.durationSeconds } / 60L).toInt()
-        } catch (e: Exception) {
-            0
-        }
-    }
-
-    /** 今日 0 点的时间戳 */
-    private fun startOfTodayMillis(): Long {
-        val cal = java.util.Calendar.getInstance()
-        cal.set(java.util.Calendar.HOUR_OF_DAY, 0)
-        cal.set(java.util.Calendar.MINUTE, 0)
-        cal.set(java.util.Calendar.SECOND, 0)
-        cal.set(java.util.Calendar.MILLISECOND, 0)
-        return cal.timeInMillis
-    }
-
-    private fun nowMillis(): Long = System.currentTimeMillis()
-
-    /**
      * 显示长按菜单
      */
     private fun showMenu() {
         val ctl = controller ?: return
         val menu = menuController ?: return
+        val anchor = ctl.windowTokenView() ?: return
         val (x, y) = ctl.currentPosition()
-        menu.show(x + dpToPx(40), y)
+        menu.show(anchor, x + dpToPx(40), y)
     }
 
     /**
@@ -943,45 +810,6 @@ class DesktopPetService : Service() {
         val prefs = getSharedPreferences(PREFS, Context.MODE_PRIVATE)
         val sizeDp = prefs.getInt(KEY_SIZE_DP, PetWindowController.DEFAULT_SIZE_DP)
         return dpToPx(sizeDp)
-    }
-
-    /**
-     * 说一句随机台词（点击/拖拽等交互触发）
-     */
-    private fun speakRandomLine() {
-        val ctl = controller ?: return
-        val scene = LocalLineLibrary.Scene.IDLE
-        ctl.showBubble(LocalLineLibrary.line(scene))
-    }
-
-    /**
-     * 打开聊天页
-     */
-    private fun openChat() {
-        try {
-            val intent = Intent(this, MainActivity::class.java).apply {
-                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_SINGLE_TOP)
-                putExtra(MainActivity.EXTRA_OPEN_CHAT, true)
-            }
-            startActivity(intent)
-        } catch (e: Exception) {
-            Log.w(TAG, "打开聊天页失败", e)
-        }
-    }
-
-    /**
-     * 打开投喂页
-     */
-    private fun openFeeding() {
-        try {
-            val intent = Intent(this, MainActivity::class.java).apply {
-                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_SINGLE_TOP)
-                putExtra(MainActivity.EXTRA_OPEN_FEEDING, true)
-            }
-            startActivity(intent)
-        } catch (e: Exception) {
-            Log.w(TAG, "打开投喂页失败", e)
-        }
     }
 
     /**
@@ -1024,7 +852,7 @@ class DesktopPetService : Service() {
         )
         return NotificationCompat.Builder(this, DeepFocusApp.NOTIFICATION_CHANNEL_ID)
             .setContentTitle("大肥鱼在桌面上")
-            .setContentText("点它可以跟它说说话")
+            .setContentText("有消息时，它会冒个泡泡告诉你")
             .setSmallIcon(R.drawable.ic_shield)
             .setContentIntent(contentIntent)
             .setOngoing(true)

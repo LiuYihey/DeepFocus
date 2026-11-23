@@ -78,3 +78,6 @@ __pycache__/
 /focuscat/
 /DeepFocus/
 /deepfocus/
+
+# 视频压缩中间产物
+*.compressed.mp4

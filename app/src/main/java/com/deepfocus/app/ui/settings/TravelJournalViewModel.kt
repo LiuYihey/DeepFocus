@@ -201,31 +201,6 @@ class TravelJournalViewModel @Inject constructor(
     }
 
     /**
-     * 立刻让她出趟门（仅调试用）
-     *
-     * 正常路径是「专注满 15 分钟自动触发」，验证链路时不用真等 15 分钟。
-     * 只在 debug 包里露出按钮，正式包不会出现。
-     */
-    fun travelNowForDebug() {
-        if (_uiState.value.isTraveling) return
-        _uiState.update { it.copy(isTraveling = true) }
-        viewModelScope.launch {
-            try {
-                val journal = travelService.travelNow()
-                _uiState.update {
-                    it.copy(isTraveling = false, message = "她回来了：${journal.destination}")
-                }
-            } catch (e: kotlinx.coroutines.CancellationException) {
-                throw e
-            } catch (e: Exception) {
-                _uiState.update {
-                    it.copy(isTraveling = false, message = e.message ?: "旅行失败")
-                }
-            }
-        }
-    }
-
-    /**
      * 构造生图提示词
      *
      * 一条铁律：**人物画风不变，别的都自由**。

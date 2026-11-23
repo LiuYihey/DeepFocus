@@ -14,6 +14,7 @@ import android.view.View
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.view.animation.OvershootInterpolator
 import androidx.core.view.doOnLayout
+import kotlin.math.roundToInt
 
 /**
  * 桌宠本体视图
@@ -320,15 +321,37 @@ class PetSpriteView @JvmOverloads constructor(
         canvas.concat(matrix)
         when {
             anim != null -> {
-                anim.setBounds(0, 0, w.toInt(), h.toInt())
+                val rect = fitRect(anim.intrinsicWidth, anim.intrinsicHeight, w, h)
+                anim.setBounds(
+                    rect.left.roundToInt(),
+                    rect.top.roundToInt(),
+                    rect.right.roundToInt(),
+                    rect.bottom.roundToInt()
+                )
                 anim.draw(canvas)
             }
             bmp != null && !bmp.isRecycled -> {
                 srcRect.set(0, 0, bmp.width, bmp.height)
-                dstRect.set(0f, 0f, w, h)
+                dstRect.set(fitRect(bmp.width, bmp.height, w, h))
                 canvas.drawBitmap(bmp, srcRect, dstRect, paint)
             }
         }
         canvas.restore()
+    }
+
+    /**
+     * 等比缩放并居中
+     *
+     * 素材（尤其横版 GIF）比例各不相同，直接铺满方形 View 会被拉宽。
+     * 这里按 min(宽比, 高比) 缩到能完整放进 View，再居中。
+     */
+    private fun fitRect(srcW: Int, srcH: Int, dstW: Float, dstH: Float): RectF {
+        if (srcW <= 0 || srcH <= 0) return RectF(0f, 0f, dstW, dstH)
+        val scale = kotlin.math.min(dstW / srcW, dstH / srcH)
+        val w = srcW * scale
+        val h = srcH * scale
+        val left = (dstW - w) / 2f
+        val top = (dstH - h) / 2f
+        return RectF(left, top, left + w, top + h)
     }
 }

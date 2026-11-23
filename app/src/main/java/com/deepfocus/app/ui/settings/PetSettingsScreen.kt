@@ -13,11 +13,11 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Slider
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
@@ -133,25 +133,22 @@ fun PetSettingsScreen(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Column(modifier = Modifier.padding(16.dp)) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text(
-                            text = "桌宠大小",
-                            style = MaterialTheme.typography.bodyLarge,
-                            modifier = Modifier.weight(1f)
-                        )
-                        // 不显示 dp 原始值 —— 用户要的是「多大」，不是「多少像素单位」
-                        Text(
-                            text = petSizeLabel(uiState.sizeDp),
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    }
-                    Slider(
-                        value = uiState.sizeDp.toFloat(),
-                        onValueChange = { viewModel.setSize(it.toInt()) },
-                        valueRange = PetWindowController.MIN_SIZE_DP.toFloat()..PetWindowController.MAX_SIZE_DP.toFloat(),
-                        steps = 19
+                    Text(
+                        text = "桌宠大小",
+                        style = MaterialTheme.typography.bodyLarge
                     )
+                    Spacer(modifier = Modifier.height(10.dp))
+                    val labels = listOf("小", "中", "大", "超大")
+                    val selected = PetWindowController.nearestTier(uiState.sizeDp)
+                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        PetWindowController.SIZE_TIERS_DP.forEachIndexed { index, dp ->
+                            FilterChip(
+                                selected = dp == selected,
+                                onClick = { viewModel.setSize(dp) },
+                                label = { Text(labels.getOrElse(index) { "$dp" }) }
+                            )
+                        }
+                    }
                 }
             }
 
@@ -169,11 +166,11 @@ fun PetSettingsScreen(
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                     listOf(
-                        "点它 → 跟你说话",
+                        "点它 → 逗它一下（不会打开 App）",
                         "双击 → 投喂大白饭",
                         "按住拖动 → 把它挪到别的地方",
-                        "快速甩一下 → 它会飞出去再弹回来",
-                        "它自己也会散步、贴边休息",
+                        "不碰它就不会乱跑，停在原地等你",
+                        "它想说话时，会冒个泡泡告诉你",
                         "它饿了会露出饿相，困了会睡着"
                     ).forEach { line ->
                         Row(
@@ -252,23 +249,6 @@ fun PetSettingsScreen(
 
             Spacer(modifier = Modifier.height(32.dp))
         }
-    }
-}
-
-/**
- * 桌宠尺寸档位文案
- *
- * 用户要的是「多大」，不是「多少 dp」。dp 属于实现细节，
- * 摆到界面上只会让人以为要自己调参。
- */
-private fun petSizeLabel(sizeDp: Int): String {
-    val min = PetWindowController.MIN_SIZE_DP
-    val max = PetWindowController.MAX_SIZE_DP
-    val ratio = (sizeDp - min).toFloat() / (max - min).coerceAtLeast(1)
-    return when {
-        ratio < 0.34f -> "小"
-        ratio < 0.67f -> "中"
-        else -> "大"
     }
 }
 

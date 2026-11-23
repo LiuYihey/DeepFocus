@@ -75,16 +75,23 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Rect
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Outline
 import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -98,7 +105,6 @@ import com.deepfocus.app.ui.components.AppCard
 import com.deepfocus.app.ui.components.AppCardTokens
 import com.deepfocus.app.ui.components.FishCanvas
 import com.deepfocus.app.ui.components.FoodCanvas
-import com.deepfocus.app.ui.components.GlassCard
 import com.deepfocus.app.ui.components.InlineSectionLabel
 import com.deepfocus.app.ui.components.PrimaryButton
 import com.deepfocus.app.ui.components.StatusPill
@@ -207,16 +213,6 @@ fun FishScreen(
         } else {
             // 保存滚动状态
             val scrollState = rememberScrollState()
-            // 舞台区高度 = 角色高度 + 一点余量。
-            //
-            // 角色在这个**固定高度**的区域里垂直居中 ——
-            // 位置绝对稳定，不会因为下面的台词长度不同而上下漂移。
-            // （之前用 Arrangement.Center 居中整块内容，
-            //   内容总高一变角色就跟着动，看着像在飘。）
-            //
-            // 余量只给 12dp：舞台区比角色大一圈就会在角色下面留出一条空白，
-            // 看着像「人物悬在上面，下面空一块」。
-            val stageArea = stageSize + 12.dp
             Box(
                 modifier = Modifier
                     .fillMaxSize()
@@ -230,52 +226,79 @@ fun FishScreen(
                         .padding(top = 8.dp, bottom = 24.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                // ── 身份 ──
-                // 放在角色**上方**。
-                //
-                // 名字 + 称号 + 状态挤在角色下面时，页面看着是
-                //「角色 → 一堆字 → 按钮」，重心在偏上；
-                // 挪到角色上面后变成「名字 → 角色 → 台词 → 按钮」，
-                // 角色正好落在两段文字之间 —— 视觉上自然就在页面中间。
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    // 名字：主标题
-                    Text(
-                        text = userFish.name,
-                        color = textColor,
-                        style = MaterialTheme.typography.headlineSmall,
-                        fontWeight = themedWeight(FontWeight.Bold)
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
-                    // 称号 + 状态：一行小字副标题
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    // ── 身份 ──
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = Modifier.fillMaxWidth()
                     ) {
                         Text(
-                            text = viewModel.getAffinityTitle(userFish.affinityLevel),
-                            color = dimColor,
-                            style = MaterialTheme.typography.bodySmall
+                            text = userFish.name,
+                            color = textColor,
+                            style = MaterialTheme.typography.headlineSmall,
+                            fontWeight = themedWeight(FontWeight.Bold)
                         )
-                        // 状态胶囊：用语义说清她现在的状态，不暴露内部数值
-                        state.statusPill?.let { pill ->
-                            StatusPill(text = pill, accent = accentColor)
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            Text(
+                                text = viewModel.getAffinityTitle(userFish.affinityLevel),
+                                color = dimColor,
+                                style = MaterialTheme.typography.bodySmall
+                            )
+                            state.statusPill?.let { pill ->
+                                StatusPill(text = pill, accent = accentColor)
+                            }
                         }
+                    }
+
+                    Spacer(modifier = Modifier.height(12.dp))
+
+                    // 舞台区高度 = 角色高度 + 一点余量 + 头顶气泡槽。
+                    //
+                    // 角色钉在舞台底部，气泡槽固定高度在头顶 ——
+                    // 换台词（一行/两行）时角色位置绝对稳定，不会上下漂。
+                    // 余量只给 12dp：舞台区比角色大一圈就会在角色下面留出一条空白，
+                    // 看着像「人物悬在上面，下面空一块」。
+                    val stageArea = stageSize + 12.dp
+                    val bubbleSlot = 84.dp
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(stageArea + bubbleSlot),
+                contentAlignment = Alignment.BottomCenter
+            ) {
+                // ── 台词气泡：贴在 GIF 正上方 ──
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(bubbleSlot)
+                        .align(Alignment.TopCenter),
+                    contentAlignment = Alignment.BottomCenter
+                ) {
+                    state.idleLine?.let { line ->
+                        FishSpeechBubble(
+                            text = line,
+                            accent = accentColor,
+                            modifier = Modifier.fillMaxWidth(0.86f),
+                            onClick = {
+                                hapticFeedback.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+                                viewModel.refreshIdleLine()
+                            }
+                        )
                     }
                 }
 
-                Spacer(modifier = Modifier.height(12.dp))
-
-                // ── 舞台 ──
+                // ── 角色舞台 ──
                 // 大肥鱼是这一页的主角，放在视觉中心。
                 //
-                // 舞台区固定高度（= 角色高度 + 余量），角色在其中垂直居中。
                 // 角色本身的高度按素材短边像素反算（stageSize），
                 // 保证 1:1 显示：运行时零插值，边缘锐利，角色完整不被裁。
                 Box(
-                    modifier = Modifier.height(stageArea),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(stageArea),
                     contentAlignment = Alignment.Center
                 ) {
                     // 氛围光晕：让大肥鱼从背景里"浮"出来。
@@ -312,38 +335,9 @@ fun FishScreen(
                         onFeedingComplete = { viewModel.onFeedingVideoCompleted() }
                     )
                 }
+            }
 
-                Spacer(modifier = Modifier.height(16.dp))
-
-                // ── 台词气泡 ──
-                // 贴在形象下方，像她在跟你说话，而不是一条系统提示。
-                // 宽度随内容自适应（最多 88%），短台词就不撑成一条空荡荡的横幅。
-                state.idleLine?.let { line ->
-                    GlassCard(
-                        modifier = Modifier
-                            .fillMaxWidth(0.88f)
-                            .clickable {
-                                hapticFeedback.performHapticFeedback(HapticFeedbackType.TextHandleMove)
-                                viewModel.refreshIdleLine()
-                            },
-                        cornerRadius = 20.dp
-                    ) {
-                        Text(
-                            text = line,
-                            color = textColor,
-                            style = MaterialTheme.typography.bodyMedium,
-                            // 可爱字体（站酷快乐体）—— 台词是她在说话，
-                            // 不是系统提示。数字/拉丁走 Baloo 2，汉字走站酷。
-                            fontFamily = CuteTextFont,
-                            textAlign = TextAlign.Center,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = 20.dp, vertical = 14.dp)
-                        )
-                    }
-                }
-
-                Spacer(modifier = Modifier.height(20.dp))
+                    Spacer(modifier = Modifier.height(20.dp))
 
                 // ── 主行动：开始专注 ──
                 // 放在角色正下方，而不是页面最底。
@@ -588,6 +582,114 @@ fun FishScreen(
             hostState = snackbarHostState,
             modifier = Modifier.align(Alignment.BottomCenter)
         )
+    }
+}
+
+/**
+ * 首页台词气泡
+ *
+ * 贴在 GIF 头顶，尾巴朝下指着她。点一下换一句。
+ *
+ * 高度交给外层固定槽位控制，气泡自身按内容伸展 ——
+ * 一行/两行切换时，角色在屏幕上的位置不会跟着动。
+ */
+@Composable
+private fun FishSpeechBubble(
+    text: String,
+    accent: Color,
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit
+) {
+    val bubbleColor = MaterialTheme.colorScheme.surface
+    Surface(
+        shape = SpeechBubbleShape(),
+        color = bubbleColor,
+        shadowElevation = 8.dp,
+        border = BorderStroke(1.dp, accent.copy(alpha = 0.18f)),
+        modifier = modifier.clickable(onClick = onClick)
+    ) {
+        Text(
+            text = text,
+            color = MaterialTheme.colorScheme.onSurface,
+            style = MaterialTheme.typography.bodyMedium,
+            // 可爱字体：台词是她在说话，不是系统提示
+            fontFamily = CuteTextFont,
+            textAlign = TextAlign.Center,
+            maxLines = 2,
+            overflow = TextOverflow.Ellipsis,
+            modifier = Modifier
+                .fillMaxWidth()
+                // 底部多留一个尾巴的高度：那一段不写字，只留给曲线尾巴
+                .padding(start = 18.dp, end = 18.dp, top = 12.dp, bottom = 24.dp)
+        )
+    }
+}
+
+/**
+ * 气泡轮廓：圆角矩形 + 一条平滑的曲线尾巴
+ *
+ * 之前的尾巴是单独画的小三角：直线边、没有阴影、边框也不跟着走，
+ * 看起来像贴在气泡下面的一个纸片。现在把尾巴并进同一条轮廓，
+ * 边框和投影会自然绕着尾巴走，收口处也用贝塞尔曲线过渡。
+ */
+private class SpeechBubbleShape(
+    private val cornerRadiusDp: Float = 20f,
+    private val tailWidthDp: Float = 22f,
+    private val tailHeightDp: Float = 12f
+) : Shape {
+
+    override fun createOutline(
+        size: Size,
+        layoutDirection: LayoutDirection,
+        density: Density
+    ): Outline {
+        val tailWidth = with(density) { tailWidthDp.dp.toPx() }
+        val tailHeight = with(density) { tailHeightDp.dp.toPx() }
+        val width = size.width
+        // 尾巴从「气泡主体」的底边往下伸，主体高度要扣掉尾巴
+        val bodyHeight = (size.height - tailHeight).coerceAtLeast(0f)
+        val radius = with(density) { cornerRadiusDp.dp.toPx() }
+            .coerceAtMost(bodyHeight / 2f)
+        val doubleRadius = radius * 2f
+        val tailCenterX = width / 2f
+
+        val path = Path().apply {
+            moveTo(radius, 0f)
+            lineTo(width - radius, 0f)
+            arcTo(
+                Rect(width - doubleRadius, 0f, width, doubleRadius),
+                -90f, 90f, false
+            )
+            lineTo(width, bodyHeight - radius)
+            arcTo(
+                Rect(width - doubleRadius, bodyHeight - doubleRadius, width, bodyHeight),
+                0f, 90f, false
+            )
+            // 底边走到尾巴右根，再沿着曲线收进尾尖、从左根回来
+            lineTo(tailCenterX + tailWidth / 2f, bodyHeight)
+            cubicTo(
+                tailCenterX + tailWidth * 0.30f, bodyHeight + tailHeight * 0.45f,
+                tailCenterX + tailWidth * 0.22f, bodyHeight + tailHeight,
+                tailCenterX, bodyHeight + tailHeight
+            )
+            cubicTo(
+                tailCenterX - tailWidth * 0.22f, bodyHeight + tailHeight,
+                tailCenterX - tailWidth * 0.30f, bodyHeight + tailHeight * 0.45f,
+                tailCenterX - tailWidth / 2f, bodyHeight
+            )
+            lineTo(radius, bodyHeight)
+            arcTo(
+                Rect(0f, bodyHeight - doubleRadius, doubleRadius, bodyHeight),
+                90f, 90f, false
+            )
+            lineTo(0f, radius)
+            arcTo(
+                Rect(0f, 0f, doubleRadius, doubleRadius),
+                180f, 90f, false
+            )
+            close()
+        }
+        return Outline.Generic(path)
     }
 }
 

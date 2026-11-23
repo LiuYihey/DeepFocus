@@ -1,8 +1,5 @@
 package com.deepfocus.app.ui.settings
 
-import android.content.ActivityNotFoundException
-import android.content.Intent
-import android.widget.Toast
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -36,7 +33,6 @@ import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Psychology
 import androidx.compose.material.icons.filled.Schedule
-import androidx.compose.material.icons.filled.Upload
 import androidx.compose.material.icons.outlined.BatteryFull
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -74,7 +70,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.core.content.FileProvider
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
@@ -90,7 +85,6 @@ import com.deepfocus.app.ui.components.iconBaselineOffset
 import com.deepfocus.app.util.PermissionHelper
 import com.deepfocus.app.util.RomUtils
 import com.deepfocus.app.ui.theme.themedWeight
-import java.io.File
 
 /**
  * 设置界面 — iOS Settings 风格
@@ -137,34 +131,6 @@ fun SettingsScreen(
         uiState.successMessage?.let { msg ->
             snackbarHostState.showSnackbar(msg)
             viewModel.clearSuccess()
-        }
-    }
-
-    // 当导出文件路径变化时，触发分享；成功后才提示用户
-    LaunchedEffect(uiState.exportedFilePath) {
-        uiState.exportedFilePath?.let { path ->
-            val file = File(path)
-            if (file.exists()) {
-                try {
-                    val uri = FileProvider.getUriForFile(
-                        context,
-                        "${context.packageName}.fileprovider",
-                        file
-                    )
-                    val shareIntent = Intent(Intent.ACTION_SEND).apply {
-                        type = "application/json"
-                        putExtra(Intent.EXTRA_STREAM, uri)
-                        addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                    }
-                    context.startActivity(Intent.createChooser(shareIntent, "导出数据"))
-                    snackbarHostState.showSnackbar("已打开分享窗口，请选择保存位置")
-                } catch (e: ActivityNotFoundException) {
-                    Toast.makeText(context, "未找到可分享的应用", Toast.LENGTH_SHORT).show()
-                } catch (e: Exception) {
-                    Toast.makeText(context, "分享失败：${e.message ?: "未知错误"}", Toast.LENGTH_SHORT).show()
-                }
-            }
-            viewModel.clearExportedFile()
         }
     }
 
@@ -339,20 +305,6 @@ fun SettingsScreen(
                         hapticFeedback.performHapticFeedback(HapticFeedbackType.TextHandleMove)
                         onNavigateToPet()
                     }
-                )
-            }
-
-            Spacer(modifier = Modifier.size(24.dp))
-
-            // ── 自定义与数据 ──
-            SectionHeader(title = "自定义与数据")
-
-            IosSettingsGroup {
-                // 导出数据（导航行）
-                IosNavigationRow(
-                    icon = Icons.Filled.Upload,
-                    title = "导出数据",
-                    onClick = { viewModel.exportData() }
                 )
             }
 

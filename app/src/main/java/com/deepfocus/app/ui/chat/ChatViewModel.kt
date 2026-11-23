@@ -30,6 +30,8 @@ import javax.inject.Inject
 data class ChatUiState(
     /** 当前输入框内容 */
     val input: String = "",
+    /** 待发送的图片（从相册选好，还没配文 / 还没发） */
+    val pendingImageUri: android.net.Uri? = null,
     /** 是否正在等待大肥鱼回复 */
     val isReplying: Boolean = false,
     /** 流式回复的实时文本（打字机效果） */
@@ -57,7 +59,8 @@ data class ChatUiState(
      * 必须包含 [isConfigured]：没配 API Key 时点发送只会弹一句「请先配置 API」，
      * 用户白等一趟。直接不让点更干脆。
      */
-    val canSend: Boolean get() = input.isNotBlank() && !isReplying && isConfigured
+    val canSend: Boolean
+        get() = (input.isNotBlank() || pendingImageUri != null) && !isReplying && isConfigured
 }
 
 /**
@@ -120,10 +123,17 @@ class ChatViewModel @Inject constructor(
         _uiState.update { it.copy(input = text) }
     }
 
-    /** 发送消息 */
+    /** 发送消息（纯文字，或「图片 + 可选配文」） */
     fun send() {
         val text = _uiState.value.input.trim()
-        if (text.isEmpty() || _uiState.value.isReplying) return
+        val image = _uiState.value.pendingImageUri
+        if (_uiState.value.isReplying) return
+
+        if (image != null) {
+            sendImage(image, text)
+            return
+        }
+        if (text.isEmpty()) return
 
         _uiState.update { it.copy(input = "", isReplying = true, streamingText = "", errorMessage = null) }
 
@@ -156,6 +166,20 @@ class ChatViewModel @Inject constructor(
     }
 
     /**
+     * 从相册选好一张图
+     *
+     * 只挂到输入框，不立即发送 —— 用户可以再输入配文，最后一起发。
+     */
+    fun attachImage(uri: android.net.Uri) {
+        _uiState.update { it.copy(pendingImageUri = uri) }
+    }
+
+    /** 移除还没发出去的图片 */
+    fun removePendingImage() {
+        _uiState.update { it.copy(pendingImageUri = null) }
+    }
+
+    /**
      * 发一张图给她看
      *
      * 图片先压小、落一份到私有目录，再把 base64 随消息送进模型 ——
@@ -167,7 +191,13 @@ class ChatViewModel @Inject constructor(
     fun sendImage(uri: android.net.Uri, text: String = "") {
         if (_uiState.value.isReplying) return
         _uiState.update {
-            it.copy(input = "", isReplying = true, streamingText = "", errorMessage = null)
+            it.copy(
+                input = "",
+                pendingImageUri = null,
+                isReplying = true,
+                streamingText = "",
+                errorMessage = null
+            )
         }
 
         streamingJob = viewModelScope.launch {

@@ -135,19 +135,6 @@ fun TravelJournalScreen(
             }
 
             item { Spacer(modifier = Modifier.height(24.dp)) }
-
-            // 调试入口：不用真等 15 分钟就能验证「旅行 → 日记 → 生图」整条链路
-            if (com.deepfocus.app.BuildConfig.DEBUG) {
-                item {
-                    TextButton(
-                        onClick = { viewModel.travelNowForDebug() },
-                        enabled = !uiState.isTraveling,
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Text(if (uiState.isTraveling) "她正在路上…" else "（调试）现在让她去旅行")
-                    }
-                }
-            }
         }
     }
 

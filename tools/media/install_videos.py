@@ -7,7 +7,7 @@
 不再需要视频文件。
 
 目录约定（App 读取的）
-    videos/focus/bigfatfish.mp4         专注页常服（循环播放 + 环境音）
+    videos/focus/bigfatfish.mp4         专注页常服（循环播放，静音）
     videos/focus/bigfatfish_winter.mp4  专注页冬装（可选，没有就退回常服版）
 
 来源目录
@@ -15,7 +15,7 @@
     （用豆包/即梦按 docs/专注页视频Prompt.md 生成后放进来）
 
 处理
-    * 叠一层环境音（首尾各淡入淡出 0.3 秒，循环时不爆音）
+    * 丢掉视频自带音轨（专注页不播任何声音）
     * 压成 H.264 baseline + yuv420p，兼容 Android MediaCodec
     * 9:16 → 1280 高（全屏 ZOOM 不能糊）
 
@@ -32,7 +32,6 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 APP = os.path.dirname(os.path.dirname(HERE))          # DeepFocus/
 SRC = os.path.join(APP, "artwork", "videos", "focus")
 ASSETS = os.path.join(APP, "app", "src", "main", "assets", "videos", "focus")
-AMBIENT = os.path.join(HERE, "ambience.mp3")
 
 FFMPEG = (r"C:\Users\<user>\AppData\Local\Microsoft\WinGet\Packages"
           r"\Gyan.FFmpeg_Microsoft.Winget.Source_8wekyb3d8bbwe"
@@ -40,8 +39,6 @@ FFMPEG = (r"C:\Users\<user>\AppData\Local\Microsoft\WinGet\Packages"
 FFPROBE = (r"C:\Users\<user>\AppData\Local\Microsoft\WinGet\Packages"
            r"\Gyan.FFmpeg_Microsoft.Winget.Source_8wekyb3d8bbwe"
            r"\ffprobe-8.1.2-full_build\bin\ffprobe.exe")
-
-FADE = 0.3  # 环境音首尾淡入淡出（秒），避免循环播放时爆音
 
 # 源文件 → 装到 assets 的名字
 TARGETS = [
@@ -59,39 +56,26 @@ def sh(cmd):
 
 
 def duration(path):
-    p = subprocess.run([FFPROBE, "-v", "error", "-show_entries", "format=duration",
-                        "-of", "default=noprint_wrappers=1:nokey=1", path],
-                       capture_output=True, text=True)
+    try:
+        p = subprocess.run([FFPROBE, "-v", "error", "-show_entries", "format=duration",
+                            "-of", "default=noprint_wrappers=1:nokey=1", path],
+                           capture_output=True, text=True)
+    except FileNotFoundError:
+        return 0.0
     try:
         return float(p.stdout.strip())
     except ValueError:
         return 0.0
 
 
-def mux_ambient(src, dst):
-    """给专注页叠环境音，首尾各淡入淡出 FADE 秒。视频流直接 copy。"""
-    L = duration(src)
-    if L <= 0:
-        raise SystemExit(f"读不出时长：{src}")
-    fade = min(FADE, L / 4)
-    af = (f"[1:a]atrim=0:{L},asetpts=PTS-STARTPTS,"
-          f"afade=t=in:st=0:d={fade},"
-          f"afade=t=out:st={max(0.0, L - fade)}:d={fade}[aout]")
-    sh([FFMPEG, "-y", "-i", src, "-stream_loop", "-1", "-i", AMBIENT,
-        "-filter_complex", af, "-map", "0:v", "-map", "[aout]",
-        "-c:v", "copy", "-c:a", "aac", "-b:a", "96k", "-ac", "2",
-        "-shortest", "-movflags", "+faststart", dst])
-    return dst
-
-
 def compress(src, dst, height=1280, crf=28, preset="slow"):
-    """压成 H.264 baseline + yuv420p。9:16 全屏 ZOOM，不能糊。"""
+    """压成 H.264 baseline + yuv420p，并彻底去掉音轨。"""
     os.makedirs(os.path.dirname(dst), exist_ok=True)
     cmd = [FFMPEG, "-y", "-i", src, "-vf", f"scale=-2:{height}",
            "-c:v", "libx264", "-profile:v", "baseline", "-level", "3.1",
            "-preset", preset, "-crf", str(crf),
            "-pix_fmt", "yuv420p", "-movflags", "+faststart",
-           "-c:a", "aac", "-b:a", "96k", "-ac", "2", dst]
+           "-an", dst]
     p = subprocess.run(cmd, capture_output=True, text=True)
     if p.returncode != 0:
         print("   ffmpeg failed:", p.stderr[-400:])
@@ -120,17 +104,9 @@ def main():
             missing.append(dst_name)
             continue
 
-        work = src
-        if os.path.exists(AMBIENT):
-            print(f"--- {dst_name}：叠加环境音")
-            ambient = os.path.join(SRC, src_name.replace(".mp4", "_ambient.mp4"))
-            mux_ambient(src, ambient)
-            work = ambient
-        else:
-            print(f"--- {dst_name}：没有环境音，跳过")
-
+        print(f"--- {dst_name}：静音压缩")
         tmp = os.path.join(SRC, src_name.replace(".mp4", ".compressed.mp4"))
-        if not compress(work, tmp):
+        if not compress(src, tmp):
             continue
         dst = os.path.join(ASSETS, dst_name)
         shutil.copy2(tmp, dst)

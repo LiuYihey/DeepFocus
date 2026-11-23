@@ -211,16 +211,17 @@ class ProactiveScheduler @Inject constructor(
             recentActions.add(action to now)
             Log.i(TAG, "主动开口：${action.name}（${decision.reason}）")
 
-            // 弹通知（2026-11-18 用户要求）：
-            // 「大肥鱼唤醒时主动发的消息可以通过通知栏出现，
-            //  所以用户不在 app 内也能收到大肥鱼的消息。」
+            // 消息分流（2026-11-22 用户要求）：
+            // - 催待办（TODO_NAG）→ 通知栏，用户不在 App 也能被提醒
+            // - 其它主动消息 → 不发通知，交给桌宠气泡
+            //   （DesktopPetService 订阅最新 FISH 消息）；没开桌宠就只在 App 内可见
             //
             // 没给通知权限就静默跳过（FishNotifier 内部判断）。
-            val sent = notifier.notifyProactive("大肥鱼", message.content)
-            // 这次要是正好催了待办，就记下「今天催过」，
-            // 免得 Worker 兜底时再催一遍同样的事
-            if (sent && action == ProactiveAction.TODO_NAG) {
-                notifier.markTodoNagSentToday()
+            if (action == ProactiveAction.TODO_NAG) {
+                val sent = notifier.notifyProactive("大肥鱼", message.content)
+                // 这次要是正好催了待办，就记下「今天催过」，
+                // 免得 Worker 兜底时再催一遍同样的事
+                if (sent) notifier.markTodoNagSentToday()
             }
         }
     }

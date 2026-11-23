@@ -2,21 +2,18 @@
 <!--
   桌宠悬浮窗布局
 
-  结构：一个 FrameLayout 装下「气泡 + 本体」两层，两者都用 top|start 对齐。
+  结构：一个 FrameLayout 装下「气泡 + 本体」两层。
 
-  关键设计：气泡用 translationY 往上挪，而不是靠 layout_gravity 排版。
-  因为 WindowManager 的 x/y 是窗口原点 —— 如果用 LinearLayout 把气泡排在本体上面，
-  气泡一显示整个窗口就会变高，桌宠本体在屏幕上就会往下跳。
-  用 translationY 不改变布局，气泡凭空浮在本体上方，本体纹丝不动。
-
-  窗口带 FLAG_LAYOUT_NO_LIMITS，所以气泡可以超出窗口边界不被裁掉。
+  气泡显示时窗口会临时变高（root 的 minimumHeight），本体靠 layout_gravity=bottom
+  钉在窗口底部 —— 这样气泡从上方长出来，本体在屏幕上纹丝不动。
+  早期版本用 translationY 把气泡挪到窗口外面，结果被窗口边界裁掉，从来没显示出来过。
 -->
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/petRoot"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content">
 
-    <!-- 台词气泡（用 translationY 浮在本体上方） -->
+    <!-- 台词气泡（窗口变高时从顶部往下排，本体在底部） -->
     <com.deepfocus.app.pet.PetBubbleView
         android:id="@+id/petBubble"
         android:layout_width="wrap_content"
@@ -24,11 +21,11 @@
         android:layout_gravity="top|start"
         android:visibility="gone" />
 
-    <!-- 大肥鱼本体 -->
+    <!-- 大肥鱼本体（钉在窗口底部） -->
     <com.deepfocus.app.pet.PetSpriteView
         android:id="@+id/petSprite"
         android:layout_width="160dp"
         android:layout_height="160dp"
-        android:layout_gravity="top|start" />
+        android:layout_gravity="bottom|start" />
 
 </FrameLayout>

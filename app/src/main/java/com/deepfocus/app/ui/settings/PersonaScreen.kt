@@ -117,12 +117,10 @@ fun PersonaScreen(
 
             CurrentPersonaCard(
                 name = uiState.currentBaseName,
-                tagline = uiState.currentTagline,
                 affinity = uiState.affinity,
                 isBuiltin = uiState.currentIsBuiltin,
                 sourceRepo = uiState.currentSourceRepo,
-                sourceLicense = uiState.currentSourceLicense,
-                hasOverlay = uiState.hasOverlay
+                sourceLicense = uiState.currentSourceLicense
             )
 
             // ── 内置人格卡包 ──
@@ -328,12 +326,10 @@ fun PersonaScreen(
 @Composable
 private fun CurrentPersonaCard(
     name: String,
-    tagline: String,
     affinity: Int,
     isBuiltin: Boolean,
     sourceRepo: String,
-    sourceLicense: String,
-    hasOverlay: Boolean
+    sourceLicense: String
 ) {
     Surface(
         color = MaterialTheme.colorScheme.surfaceVariant,
@@ -363,24 +359,6 @@ private fun CurrentPersonaCard(
                     text = FishMoodResolver.affinityTitle(affinity),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
-
-            if (tagline.isNotBlank()) {
-                Spacer(modifier = Modifier.height(8.dp))
-                Text(
-                    text = tagline,
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
-
-            if (hasOverlay) {
-                Spacer(modifier = Modifier.height(8.dp))
-                Text(
-                    text = "你改过这张卡，改动会跟着它换档一起生效",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.primary
                 )
             }
 
@@ -461,23 +439,6 @@ private fun BuiltinCardList(
                                 MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f)
                             },
                             maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
-                        )
-                        Text(
-                            text = buildString {
-                                if (card.affinityThreshold > 0) {
-                                    // 阈值也不给数字 —— 说人话：她的心情到了哪一档
-                                    append("${FishMoodResolver.affinityTitle(card.affinityThreshold)}时解锁 · ")
-                                } else {
-                                    append("初始 · ")
-                                }
-                                append(card.tagline)
-                            },
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant.copy(
-                                alpha = if (unlocked) 1f else 0.5f
-                            ),
-                            maxLines = 2,
                             overflow = TextOverflow.Ellipsis
                         )
                     }

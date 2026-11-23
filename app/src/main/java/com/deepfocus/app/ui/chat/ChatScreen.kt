@@ -33,6 +33,7 @@ import androidx.compose.material.icons.filled.AddComment
 import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.filled.AddPhotoAlternate
 import androidx.compose.material.icons.filled.Chat
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.DeleteOutline
 import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.Key
@@ -104,7 +105,8 @@ fun ChatScreen(
         contract = androidx.activity.result.contract.ActivityResultContracts.PickVisualMedia()
     ) { uri ->
         if (uri != null) {
-            viewModel.sendImage(uri)
+            // 先挂到输入框，用户可以继续写配文再一起发
+            viewModel.attachImage(uri)
         }
     }
 
@@ -241,7 +243,9 @@ fun ChatScreen(
                         androidx.activity.result.contract.ActivityResultContracts.PickVisualMedia.ImageOnly
                     )
                 )
-            }
+            },
+            hasPendingImage = uiState.pendingImageUri != null,
+            onRemoveImage = viewModel::removePendingImage
         )
     }
 
@@ -649,6 +653,12 @@ private fun WelcomeCard(modifier: Modifier = Modifier) {
                 fontWeight = themedWeight(FontWeight.SemiBold),
                 color = MaterialTheme.colorScheme.onBackground
             )
+            Spacer(modifier = Modifier.height(6.dp))
+            Text(
+                text = "不找我聊天也行，反正我也在摸鱼。",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
         }
     }
 }
@@ -665,19 +675,57 @@ private fun ChatInputBar(
     onSend: () -> Unit,
     onStop: () -> Unit,
     onTriggerProactive: () -> Unit,
-    onPickImage: () -> Unit
+    onPickImage: () -> Unit,
+    hasPendingImage: Boolean,
+    onRemoveImage: () -> Unit
 ) {
     Surface(
         color = MaterialTheme.colorScheme.surface,
         tonalElevation = 0.dp
     ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .navigationBarsPadding()
-                .padding(horizontal = 12.dp, vertical = 10.dp),
-            verticalAlignment = Alignment.Bottom
-        ) {
+        Column {
+            // 图片先挂在这里，配文可以继续改，最后一起发
+            if (hasPendingImage) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(start = 16.dp, end = 12.dp, top = 8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.AddPhotoAlternate,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.primary.copy(alpha = 0.8f),
+                        modifier = Modifier.size(16.dp)
+                    )
+                    Spacer(modifier = Modifier.size(6.dp))
+                    Text(
+                        text = "已添加一张图片",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.weight(1f)
+                    )
+                    IconButton(
+                        onClick = onRemoveImage,
+                        modifier = Modifier.size(28.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.Close,
+                            contentDescription = "移除图片",
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier.size(16.dp)
+                        )
+                    }
+                }
+            }
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .navigationBarsPadding()
+                    .padding(horizontal = 12.dp, vertical = 10.dp),
+                verticalAlignment = Alignment.Bottom
+            ) {
             // 让大肥鱼主动开口
             IconButton(onClick = onTriggerProactive, enabled = !isReplying) {
                 Icon(
@@ -732,6 +780,7 @@ private fun ChatInputBar(
                         modifier = Modifier.size(22.dp)
                     )
                 }
+            }
             }
         }
     }

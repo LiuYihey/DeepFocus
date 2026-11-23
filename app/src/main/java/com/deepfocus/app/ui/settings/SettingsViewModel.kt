@@ -7,7 +7,6 @@ import com.deepfocus.app.ai.FishBrain
 import com.deepfocus.app.ai.FishMoodResolver
 import com.deepfocus.app.data.PersonaBase
 import com.deepfocus.app.data.PersonaCardStore
-import com.deepfocus.app.data.repository.StatsRepositoryImpl
 import com.deepfocus.app.util.PermissionHelper
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -15,9 +14,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import org.json.JSONObject
-import java.io.File
-import java.io.FileOutputStream
 import javax.inject.Inject
 
 /**
@@ -38,11 +34,9 @@ data class SettingsPermissionStatus(
 data class SettingsUiState(
     /** 权限状态 */
     val permissionStatus: SettingsPermissionStatus = SettingsPermissionStatus(),
-    /** 导出的数据文件路径 */
-    val exportedFilePath: String? = null,
-    /** 错误提示（导出失败等），UI 层据此展示反馈 */
+    /** 错误提示，UI 层据此展示反馈 */
     val errorMessage: String? = null,
-    /** 一次性成功提示（导出成功等），UI 层据此展示 Snackbar */
+    /** 一次性成功提示，UI 层据此展示 Snackbar */
     val successMessage: String? = null,
     /** 当前生效的人格卡 id（内置卡 id 或自定义卡 id） */
     val personaCardId: String = "",
@@ -62,7 +56,6 @@ data class SettingsUiState(
  */
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
-    private val statsRepository: StatsRepositoryImpl,
     private val userFishRepository: com.deepfocus.app.data.repository.FishRepository,
     private val personaCardStore: PersonaCardStore,
     private val fishBrain: FishBrain,
@@ -138,51 +131,6 @@ class SettingsViewModel @Inject constructor(
     fun onResume() {
         checkPermissions()
         loadCompanionState()
-    }
-
-    /**
-     * 导出数据为 JSON 格式
-     * 将专注会话数据导出为 JSON 文件
-     */
-    fun exportData() {
-        viewModelScope.launch {
-            try {
-                val context = getApplication<Application>()
-                val exportData = JSONObject()
-
-                // 导出专注统计
-                val totalFocusTime = statsRepository.getTotalStats()
-                val statsJson = JSONObject()
-                statsJson.put("totalFocusTimeSeconds", totalFocusTime)
-                exportData.put("focusStats", statsJson)
-
-                // 写入文件
-                val exportDir = File(context.cacheDir, "exports").apply { mkdirs() }
-                val exportFile = File(exportDir, "deepfocus_export_${System.currentTimeMillis()}.json")
-                FileOutputStream(exportFile).use { fos ->
-                    fos.write(exportData.toString(2).toByteArray())
-                }
-
-                _uiState.update {
-                    it.copy(
-                        exportedFilePath = exportFile.absolutePath
-                    )
-                }
-            } catch (e: kotlinx.coroutines.CancellationException) {
-                // 协程取消必须重新抛出，保证结构化并发正确传播
-                // （ViewModel 销毁时不应走错误处理路径）
-                throw e
-            } catch (e: Exception) {
-                _uiState.update { it.copy(errorMessage = "导出失败：${e.message ?: "未知错误"}") }
-            }
-        }
-    }
-
-    /**
-     * 清除导出文件路径
-     */
-    fun clearExportedFile() {
-        _uiState.update { it.copy(exportedFilePath = null) }
     }
 
     /**

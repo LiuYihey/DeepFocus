@@ -2,7 +2,6 @@ package com.deepfocus.app.ui.settings
 
 import android.content.Context
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.deepfocus.app.pet.DesktopPetService
 import com.deepfocus.app.pet.PetWindowController
 import com.deepfocus.app.util.PermissionHelper
@@ -12,7 +11,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 /**
@@ -73,7 +71,9 @@ class PetSettingsViewModel @Inject constructor(
             it.copy(
                 enabled = prefs.getBoolean(KEY_ENABLED, false),
                 hasOverlayPermission = overlayGranted,
-                sizeDp = prefs.getInt(KEY_SIZE_DP, PetWindowController.DEFAULT_SIZE_DP),
+                sizeDp = PetWindowController.nearestTier(
+                    prefs.getInt(KEY_SIZE_DP, PetWindowController.DEFAULT_SIZE_DP)
+                ),
                 hasBatteryExemption = PermissionHelper.checkBatteryOptimization(appContext)
             )
         }
@@ -137,22 +137,15 @@ class PetSettingsViewModel @Inject constructor(
      * 修改桌宠尺寸
      */
     fun setSize(sizeDp: Int) {
-        val clamped = sizeDp.coerceIn(
-            PetWindowController.MIN_SIZE_DP,
-            PetWindowController.MAX_SIZE_DP
-        )
+        // 只认档位值，避免旧版本保存的连续值把选中态卡在档位之间
+        val tier = PetWindowController.nearestTier(sizeDp)
         appContext.getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit()
-            .putInt(KEY_SIZE_DP, clamped)
+            .putInt(KEY_SIZE_DP, tier)
             .apply()
-        _uiState.update { it.copy(sizeDp = clamped) }
-        // 尺寸改了需要重启桌宠才能生效
+        _uiState.update { it.copy(sizeDp = tier) }
+        // 服务在跑就实时改窗口尺寸 —— 不重启，重启会闪一下
         if (_uiState.value.enabled) {
-            DesktopPetService.stop(appContext)
-            // 延迟重启，等服务完全停掉
-            viewModelScope.launch {
-                kotlinx.coroutines.delay(300)
-                DesktopPetService.start(appContext)
-            }
+            DesktopPetService.setSize(appContext, tier)
         }
     }
 

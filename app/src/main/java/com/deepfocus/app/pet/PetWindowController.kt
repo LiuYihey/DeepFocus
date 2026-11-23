@@ -23,9 +23,9 @@ import kotlin.math.roundToInt
  * 负责：
  * - 创建/销毁 WindowManager 悬浮窗
  * - 渲染桌宠本体 + 台词气泡
- * - 处理手势：点击 / 双击 / 长按 / 拖拽 / 甩出
- * - 驱动物理引擎（弹簧跟手、抛物线、边缘反弹）
- * - 状态机：待机 → 散步 → 贴边 → 睡觉 → 拖拽 → 飞行
+ * - 处理手势：点击 / 双击 / 长按 / 拖拽
+ * - 维护位置（1:1 跟手，松手即停）
+ * - 状态机：待机 → 散步 → 贴边 → 睡觉 → 拖拽
  *
  * 关键系统约束（踩过的坑）：
  * 1. 必须 `FLAG_NOT_FOCUSABLE`，否则会抢走输入法的键盘焦点
@@ -51,15 +51,6 @@ class PetWindowController(
         /** 用户拖动结束 */
         fun onPetDragged(x: Int, y: Int)
 
-        /** 用户甩出了桌宠 */
-        fun onPetFlung()
-
-        /** 桌宠走到了屏幕边缘 */
-        fun onPetReachedEdge(edge: Edge)
-
-        /** 需要显示一条台词 */
-        fun onPetSpeakRequest(): String?
-
         /** 桌宠状态变化 */
         fun onPetStateChanged(state: PetState)
     }
@@ -69,24 +60,12 @@ class PetWindowController(
         /** 待机 */
         IDLE,
 
-        /** 散步中 */
-        WALKING,
-
-        /** 贴边躲藏 */
-        HIDDEN,
-
         /** 睡觉 */
         SLEEPING,
 
         /** 被拖拽 */
-        DRAGGING,
-
-        /** 飞行中 */
-        FLYING
+        DRAGGING
     }
-
-    /** 屏幕边缘 */
-    enum class Edge { LEFT, RIGHT }
 
     companion object {
         private const val TAG = "PetWindowController"
@@ -94,26 +73,24 @@ class PetWindowController(
         /** 默认桌宠宽度（dp） */
         const val DEFAULT_SIZE_DP = 160
 
+        /** 可选尺寸档位（dp） */
+        val SIZE_TIERS_DP = intArrayOf(96, 128, 160, 200)
+
         /** 最小桌宠尺寸（dp） */
-        const val MIN_SIZE_DP = 80
+        const val MIN_SIZE_DP = 96
 
         /** 最大桌宠尺寸（dp） */
-        const val MAX_SIZE_DP = 280
+        const val MAX_SIZE_DP = 200
+
+        /** 取最接近的尺寸档位（兼容旧版本保存的连续值） */
+        fun nearestTier(sizeDp: Int): Int =
+            SIZE_TIERS_DP.minByOrNull { kotlin.math.abs(it - sizeDp) } ?: DEFAULT_SIZE_DP
 
         /** 右上角默认位置：距顶 */
         const val DEFAULT_TOP_OFFSET_DP = 120
 
         /** 右上角默认位置：距右 */
         const val DEFAULT_RIGHT_OFFSET_DP = 12
-
-        /** 贴边后静置多久缩进去（ms） */
-        const val EDGE_HIDE_DELAY_MS = 12_000L
-
-        /** 行走速度（px/s） */
-        const val WALK_SPEED = 120f
-
-        /** 两次散步之间的最小间隔（ms） */
-        const val WALK_COOLDOWN_MS = 30_000L
 
         /** 气泡显示时长（ms） */
         const val BUBBLE_DURATION_MS = 10_000L
@@ -158,21 +135,15 @@ class PetWindowController(
     private var downX = 0f
     private var downY = 0f
     private var lastTouchX = 0f
-    private var lastTouchY = 0f
     private var lastTouchTime = 0L
-    private var velocityX = 0f
-    private var velocityY = 0f
     private var isDragging = false
     private var longPressTriggered = false
-
-    /** 贴边计时 */
-    private var edgeIdleSince = 0L
 
     /** 气泡隐藏计时 */
     private var bubbleHideAt = 0L
 
-    /** 随机数 */
-    private val random = java.util.Random()
+    /** 气泡占用的额外高度（px）—— 窗口变高、本体靠底，需要把窗口上移同样距离 */
+    private var bubbleExtraTop = 0
 
     /**
      * 显示桌宠
@@ -189,6 +160,16 @@ class PetWindowController(
         rootView = layout as FrameLayout
         petView = layout.findViewById(R.id.petSprite)
         bubbleView = layout.findViewById(R.id.petBubble)
+
+        // XML 里固定写了 160dp，这里按用户选的档位覆盖
+        petView?.let { pet ->
+            val lp = pet.layoutParams
+            if (lp != null) {
+                lp.width = sizePx
+                lp.height = sizePx
+                pet.layoutParams = lp
+            }
+        }
 
         physics.screenWidth = metrics.widthPixels
         physics.screenHeight = metrics.heightPixels
@@ -240,6 +221,8 @@ class PetWindowController(
         rootView = null
         petView = null
         bubbleView = null
+        bubbleExtraTop = 0
+        bubbleHideAt = 0L
         state = PetState.IDLE
     }
 
@@ -269,10 +252,7 @@ class PetWindowController(
                     downX = event.rawX
                     downY = event.rawY
                     lastTouchX = event.rawX
-                    lastTouchY = event.rawY
                     lastTouchTime = System.currentTimeMillis()
-                    velocityX = 0f
-                    velocityY = 0f
                     isDragging = false
                     longPressTriggered = false
 
@@ -290,11 +270,6 @@ class PetWindowController(
                         isDragging = true
                         // 一旦开始拖动就取消长按检测
                         v.removeCallbacks(longPressRunnable)
-                        if (state == PetState.HIDDEN) {
-                            // 从贴边状态探出来
-                            restorePetVisibility()
-                            setState(PetState.IDLE)
-                        }
                         physics.beginDrag(event.rawX, event.rawY)
                         setState(PetState.DRAGGING)
                         // 被拎起来时换姿态：被悬在半空的紧张感
@@ -308,10 +283,7 @@ class PetWindowController(
                             physics.facing = if (delta > 0) 1 else -1
                             petView?.facing = physics.facing
                         }
-                        velocityX = event.rawX - lastTouchX
-                        velocityY = event.rawY - lastTouchY
                         lastTouchX = event.rawX
-                        lastTouchY = event.rawY
                         updatePosition()
                     }
                     true
@@ -320,13 +292,8 @@ class PetWindowController(
                 MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
                     v.removeCallbacks(longPressRunnable)
                     if (isDragging) {
-                        physics.endDrag(velocityX * 60f, velocityY * 60f)
-                        if (physics.flying) {
-                            setState(PetState.FLYING)
-                            listener.onPetFlung()
-                        } else {
-                            setState(PetState.IDLE)
-                        }
+                        physics.endDrag()
+                        setState(PetState.IDLE)
                         listener.onPetDragged(physics.x.roundToInt(), physics.y.roundToInt())
                     } else if (!longPressTriggered) {
                         // 点击 / 双击
@@ -364,15 +331,6 @@ class PetWindowController(
         }
     }
 
-    /**
-     * 恢复桌宠本体的完整尺寸（从贴边缩进状态探出）
-     */
-    private fun restorePetVisibility() {
-        petView?.scaleX = 1f
-        petView?.scaleY = 1f
-        petView?.alpha = 1f
-    }
-
     /** 上次点击时间，用于双击判定 */
     private var lastClickTime = 0L
 
@@ -384,30 +342,17 @@ class PetWindowController(
         state = newState
         when (newState) {
             PetState.IDLE -> {
-                petView?.stopWalking()
                 petView?.sleeping = false
-                edgeIdleSince = 0L
-                // 从拖拽/飞行回到常态：把 DRAG 姿态换回待机，
+                // 从拖拽回到常态：把 DRAG 姿态换回待机，
                 // 否则桌宠会一直保持被拎起来的姿势
                 if (petView?.pose == PetSpriteLibrary.Pose.DRAG) {
                     petView?.pose = PetSpriteLibrary.Pose.IDLE
                 }
             }
-            PetState.WALKING -> {
-                petView?.startWalking()
-                edgeIdleSince = 0L
-            }
-            PetState.HIDDEN -> {
-                petView?.stopWalking()
-                edgeIdleSince = System.currentTimeMillis()
-            }
             PetState.SLEEPING -> {
-                petView?.stopWalking()
                 petView?.sleeping = true
             }
-            PetState.DRAGGING, PetState.FLYING -> {
-                petView?.stopWalking()
-                edgeIdleSince = 0L
+            PetState.DRAGGING -> {
             }
         }
         listener.onPetStateChanged(state)
@@ -419,58 +364,15 @@ class PetWindowController(
      * **必须在主线程调用** —— 里面会改 View 属性、
      * 调 `WindowManager.updateViewLayout()`。
      */
-    fun tick(deltaMs: Long) {
+    fun tick() {
         if (android.os.Looper.myLooper() != mainHandler.looper) {
             // 不在主线程就切过去 —— 后台线程调 View / WindowManager 会崩 App
-            mainHandler.post { tick(deltaMs) }
+            mainHandler.post { tick() }
             return
         }
-        val dt = (deltaMs / 1000f).coerceAtMost(0.05f)
         val now = System.currentTimeMillis()
 
-        physics.step(dt)
-
-        // 落地后如果不在边缘，进入待机
-        if (state == PetState.FLYING && physics.isAtRest()) {
-            setState(PetState.IDLE)
-        }
-
-        // 待机时的随机散步
-        if (state == PetState.IDLE) {
-            maybeStartWalking(now)
-        }
-
-        // 行走时撞到边缘 → 掉头
-        if (state == PetState.WALKING) {
-            // 走够了就停下（不能一直走）
-            if (now > walkUntil) {
-                setState(PetState.IDLE)
-            }
-            val hitLeft = physics.x <= 1f
-            val hitRight = physics.x >= physics.screenWidth - physics.petWidth - 1f
-            if (hitLeft || hitRight) {
-                physics.facing = if (hitLeft) 1 else -1
-                petView?.facing = physics.facing
-                listener.onPetReachedEdge(if (hitLeft) Edge.LEFT else Edge.RIGHT)
-                // 撞边后有可能进入贴边躲藏
-                if (random.nextInt(100) < 40) {
-                    setState(PetState.HIDDEN)
-                }
-            }
-        }
-
-        // 贴边静置超时 → 缩进去
-        if (state == PetState.HIDDEN && edgeIdleSince > 0) {
-            if (now - edgeIdleSince > EDGE_HIDE_DELAY_MS) {
-                // 缩进去：只露半个身子（缩小 + 靠边）
-                petView?.scaleX = 0.45f
-                petView?.scaleY = 0.45f
-                petView?.alpha = 0.75f
-                // 靠边：左边贴 0，右边贴到屏幕右缘
-                val edgeX = if (physics.x <= 1f) 0 else physics.screenWidth - physics.petWidth
-                moveWindowTo(edgeX, physics.y.roundToInt())
-            }
-        }
+        physics.step()
 
         // 气泡自动隐藏
         if (bubbleHideAt > 0 && now > bubbleHideAt) {
@@ -478,41 +380,6 @@ class PetWindowController(
         }
 
         updatePosition()
-    }
-
-    /**
-     * 随机决定是否开始散步
-     *
-     * 注意：这是**按时间**判定，不是每帧掷骰。
-     * 每帧 3% 的话，30fps 下等于「立刻就开始走」——
-     * 桌宠会一直在动，那就不是陪伴是噪音了。
-     */
-    private fun maybeStartWalking(now: Long) {
-        if (physics.isNearEdge()) return
-        // 两次散步之间至少隔 30 秒
-        if (now < nextWalkCheckAt) return
-        nextWalkCheckAt = now + WALK_COOLDOWN_MS
-        // 30% 概率开始走
-        if (random.nextInt(100) < 30) {
-            setState(PetState.WALKING)
-            physics.facing = if (random.nextBoolean()) 1 else -1
-            petView?.facing = physics.facing
-            // 走 3~12 秒
-            walkUntil = now + 3_000L + random.nextInt(9_000)
-        }
-    }
-
-    /** 下次允许开始散步的时间 */
-    private var nextWalkCheckAt = 0L
-
-    /** 本次散步结束时间 */
-    private var walkUntil = 0L
-
-    /**
-     * 行走时推进位置
-     */
-    private fun advanceWalking(dt: Float) {
-        physics.x += physics.facing * WALK_SPEED * dt
     }
 
     /**
@@ -534,8 +401,13 @@ class PetWindowController(
     private fun moveWindowTo(x: Int, y: Int) {
         val rv = rootView ?: return
         val lp = rv.layoutParams as? WindowManager.LayoutParams ?: return
+        // 气泡显示时窗口比本体高，lp.y 要扣掉多出来的那截，本体才停在原处
+        val targetY = y - bubbleExtraTop
+        // 位置没变就别再 updateViewLayout —— 渲染循环每 33ms 调一次，
+        // 重复 relayout 会让悬浮窗在合成器里闪。
+        if (lp.x == x && lp.y == targetY) return
         lp.x = x
-        lp.y = y
+        lp.y = targetY
         try {
             windowManager.updateViewLayout(rv, lp)
         } catch (e: Exception) {
@@ -567,18 +439,20 @@ class PetWindowController(
     fun showBubble(text: String) {
         onMain {
             val bubble = bubbleView ?: return@onMain
-            bubble.setText(text)
+            val root = rootView ?: return@onMain
+            // setText 会算好气泡高度。窗口按「本体 + 气泡」变高，
+            // 本体钉在窗口底部，再从 lp.y 里扣掉多出来的高度 ——
+            // 这样气泡在头顶长出来，本体在屏幕上不动。
+            val bubbleHeight = bubble.setText(text)
+            val gap = (petSizePx * 0.04f).toInt()
+            bubbleExtraTop = bubbleHeight + gap
             bubble.visibility = View.VISIBLE
             bubble.alpha = 0f
             bubble.animate().alpha(1f).setDuration(180).start()
+            root.minimumHeight = petSizePx + bubbleExtraTop
+            root.requestLayout()
             bubbleHideAt = System.currentTimeMillis() + BUBBLE_DURATION_MS
-
-            // 用 translationY 把气泡浮到本体上方 —— 不能改布局，
-            // 否则窗口变高会让桌宠在屏幕上往下跳。
-            bubble.post {
-                val offset = -(bubble.height + (petSizePx * 0.04f).toInt())
-                bubble.translationY = offset.toFloat()
-            }
+            updatePosition()
         }
     }
 
@@ -606,6 +480,10 @@ class PetWindowController(
             val bubble = bubbleView ?: return@onMain
             bubble.animate().alpha(0f).setDuration(220).withEndAction {
                 bubble.visibility = View.GONE
+                bubbleExtraTop = 0
+                rootView?.minimumHeight = petSizePx
+                rootView?.requestLayout()
+                updatePosition()
             }.start()
             bubbleHideAt = 0L
         }
@@ -634,6 +512,14 @@ class PetWindowController(
      * 当前窗口是否已经挂在 WindowManager 上
      */
     fun isShowing(): Boolean = rootView != null
+
+    /**
+     * 拿一个已挂在窗口上的 View 当 token
+     *
+     * 长按菜单是 PopupWindow，必须依附一个真实的窗口 token。
+     * 服务里没有 Activity，只能拿桌宠自己的悬浮窗当锚点。
+     */
+    fun windowTokenView(): View? = rootView
 
     /**
      * 从任意线程安全地显示窗口
@@ -671,6 +557,45 @@ class PetWindowController(
     }
 
     /**
+     * 修改桌宠尺寸（设置页用）
+     *
+     * 只改 View 尺寸和窗口位置，不重建窗口 ——
+     * 重建会闪一下，也会把正在播的动画打断。
+     */
+    fun resize(sizeDp: Int) {
+        onMain {
+            val px = (sizeDp * context.resources.displayMetrics.density)
+                .roundToInt()
+                .coerceAtLeast(1)
+            petSizePx = px
+            physics.petWidth = px
+            physics.petHeight = px
+            rootView?.minimumHeight = px + bubbleExtraTop
+            rootView?.requestLayout()
+            petView?.let { v ->
+                val lp = v.layoutParams
+                if (lp != null) {
+                    lp.width = px
+                    lp.height = px
+                    v.layoutParams = lp
+                } else {
+                    v.layoutParams = FrameLayout.LayoutParams(px, px)
+                }
+            }
+            // 变大后可能顶出屏幕，夹回来
+            physics.x = physics.x.coerceIn(
+                0f,
+                (physics.screenWidth - px).coerceAtLeast(0).toFloat()
+            )
+            physics.y = physics.y.coerceIn(
+                0f,
+                (physics.screenHeight - px).coerceAtLeast(0).toFloat()
+            )
+            updatePosition()
+        }
+    }
+
+    /**
      * 翻转朝向
      */
     fun flipFacing() {
@@ -684,13 +609,4 @@ class PetWindowController(
      * 当前坐标
      */
     fun currentPosition(): Pair<Int, Int> = physics.x.roundToInt() to physics.y.roundToInt()
-
-    /**
-     * 推进行走（在 tick 里调用）
-     */
-    fun advance(dt: Float) {
-        if (state == PetState.WALKING) {
-            advanceWalking(dt)
-        }
-    }
 }

@@ -168,9 +168,9 @@ fun FocusScreen(
                     edgeFade = false,  // 全屏背景视频无需边缘柔化
                     // 必须从头播，否则随机切入会截掉登场动作
                     randomStart = false,
-                    // 环境音：风声、阳光下的鸟鸣、翻书声 —— 沉浸感的来源
-                    volume = 0.6f,
-                    audioFocus = true
+                    // 静音：专注页不播任何声音（视频自带音轨也不放）
+                    volume = 0f,
+                    audioFocus = false
                 )
             }
         }
@@ -263,12 +263,12 @@ fun FocusScreen(
 
         // === 计时器 ===
         // 圆润数字（Baloo 2）+ 自动缩放字号保证单行，下方一句大白饭计数
-        // 大白饭数取当前激活大肥鱼的累计投喂次数：每投喂一次消耗一份大白饭，
-        // 所以这个计数就是「这只大肥鱼一共拿到过多少份大白饭」，且只增不减。
+        // 大白饭数取本次专注已获得的份数（每满 30 分钟 +1）。
+        // 不能用 totalFeedCount —— 那是投喂次数，专注时不会变。
         FocusTimer(
             elapsedMillis = uiState.elapsedMillis,
             fishName = uiState.userFish?.name ?: "大肥鱼",
-            foodCount = uiState.userFish?.totalFeedCount ?: 0,
+            foodCount = uiState.rewardsEarned,
             travelDestination = uiState.travelDestination,
             travelInProgress = uiState.travelInProgress,
             modifier = Modifier

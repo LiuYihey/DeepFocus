@@ -1,21 +1,16 @@
 package com.deepfocus.app.pet
 
-import kotlin.math.abs
 import kotlin.math.max
-import kotlin.math.min
 
 /**
- * 桌宠物理引擎
+ * 桌宠位置状态
  *
- * 参数照搬 dsh-pet 电脑版（安卓移植版逐行对齐）：
- * - 弹簧 K=200、C=30（拖拽时的跟手迟滞感）
- * - 重力 1400
- * - 落地恢复系数 0.78
- * - 地面摩擦 2.5
+ * 刻意做得很简单：桌宠只负责"被拖到哪就待在哪"。
  *
- * 为什么不用纯"贴手指"：
- * 硬贴会让桌宠像贴纸，没有重量感。弹簧跟随有迟滞，
- * 甩出去时会被"拽"一下再加速 —— 这点差别就是"活着"和"贴图"的差别。
+ * 早期版本做过弹簧跟随 + 抛物线 + 撞墙/落地反弹，
+ * 实测在悬浮窗上观感很差：弹簧让桌宠落后手指再追上来（像在抖），
+ * 反弹又会把用户刚摆好的位置弹走。用户明确要求「我移动它，它就到哪就行」，
+ * 所以这里只保留 1:1 跟手 + 屏幕内约束。
  */
 class PetPhysics(
     /** 屏幕宽（px） */
@@ -23,52 +18,14 @@ class PetPhysics(
     /** 屏幕高（px） */
     var screenHeight: Int = 1920,
     /** 桌宠宽度（px） */
-    var petWidth: Int = 200
+    var petWidth: Int = 200,
+    /** 桌宠高度（px） */
+    var petHeight: Int = 200
 ) {
-
-    companion object {
-        /**
-         * 弹簧刚度
-         *
-         * 对应 Compose 的 `spring(stiffness = 1200f, dampingRatio = 1f)`，
-         * 即高定规范 9 的「拖拽 1200/80 零回弹」。
-         */
-        const val SPRING_K = 1200f
-
-        /**
-         * 弹簧阻尼
-         *
-         * 1200/80 → 阻尼比 = 80 / (2 × √1200) ≈ 1.155，属过阻尼，
-         * 落地即停不回弹，桌宠被拎起来松手后干净地停住。
-         */
-        const val SPRING_C = 80f
-
-        /** 重力加速度 */
-        const val GRAVITY = 1400f
-
-        /** 落地恢复系数 */
-        const val RESTITUTION = 0.78f
-
-        /** 地面摩擦 */
-        const val GROUND_FRICTION = 2.5f
-
-        /** 边缘恢复系数 */
-        const val WALL_RESTITUTION = 0.5f
-
-        /** 判定为"甩出"的速度阈值（px/s） */
-        const val FLING_THRESHOLD = 1800f
-
-        /** 静止判定：速度低于此值视为停下 */
-        const val REST_SPEED = 30f
-    }
 
     /** 当前位置（桌宠左上角） */
     var x = 0f
     var y = 0f
-
-    /** 速度 */
-    var vx = 0f
-    var vy = 0f
 
     /** 是否正在被手指拖拽 */
     var dragging = false
@@ -77,18 +34,18 @@ class PetPhysics(
     var dragTargetX = 0f
     var dragTargetY = 0f
 
-    /** 是否已经着地 */
-    var grounded = true
+    /** 手指按下时相对桌宠左上角的偏移 */
+    private var dragOffsetX = 0f
+    private var dragOffsetY = 0f
 
-    /** 是否处于「飞行中」（抛物线） */
-    var flying = false
+    /** 朝向：1 表示朝右，-1 表示朝左 */
+    var facing = 1
 
     /**
      * 切换到拖拽状态
      */
     fun beginDrag(touchX: Float, touchY: Float) {
         dragging = true
-        flying = false
         // 记录手指相对桌宠的偏移，拖动时不会跳到手指中心
         dragOffsetX = touchX - x
         dragOffsetY = touchY - y
@@ -96,98 +53,40 @@ class PetPhysics(
         dragTargetY = y
     }
 
-    /** 拖拽偏移 */
-    private var dragOffsetX = 0f
-    private var dragOffsetY = 0f
-
     /**
      * 更新拖拽目标
      */
     fun updateDrag(touchX: Float, touchY: Float) {
         dragTargetX = touchX - dragOffsetX
         dragTargetY = touchY - dragOffsetY
+        // 立即生效：窗口位置由触摸事件驱动（最高 120Hz），
+        // 不等渲染循环的 33ms tick，拖起来才真正跟手。
+        x = dragTargetX
+        y = dragTargetY
+        clampToScreen()
     }
 
     /**
      * 结束拖拽
      *
-     * @return 甩出速度（px/s），用于决定是否进入抛物线
+     * 松手即停，不做任何惯性 / 反弹。
      */
-    fun endDrag(velocityX: Float, velocityY: Float): Float {
+    fun endDrag() {
         dragging = false
-        val speed = abs(velocityX) + abs(velocityY)
-        if (speed > FLING_THRESHOLD) {
-            // 甩出去了 → 进入抛物线
-            flying = true
-            grounded = false
-            vx = velocityX
-            vy = velocityY
-        } else {
-            // 只是放下 → 保持在原地
-            vx = 0f
-            vy = 0f
-            flying = false
-            grounded = true
-        }
-        return speed
+        clampToScreen()
     }
 
     /**
-     * 每帧推进物理
+     * 每帧推进
      *
-     * @param dt 时间步长（秒）
+     * 拖拽时 1:1 贴着手指走（不做插值），其它时候位置由用户决定。
      */
-    fun step(dt: Float) {
-        if (dragging) {
-            // 弹簧跟随：向目标位置收敛
-            val ax = (dragTargetX - x) * SPRING_K - vx * SPRING_C
-            val ay = (dragTargetY - y) * SPRING_K - vy * SPRING_C
-            vx += ax * dt
-            vy += ay * dt
-            x += vx * dt
-            y += vy * dt
-            clampToScreen()
-            return
-        }
-
-        if (!flying) {
-            // 静止：只做微小的呼吸式浮动由渲染层负责
-            return
-        }
-
-        // 抛物线：重力 + 积分
-        vy += GRAVITY * dt
-        x += vx * dt
-        y += vy * dt
-
-        // 左右边缘反弹
-        if (x < 0f) {
-            x = 0f
-            vx = -vx * WALL_RESTITUTION
-        } else if (x > screenWidth - petWidth) {
-            x = (screenWidth - petWidth).toFloat()
-            vx = -vx * WALL_RESTITUTION
-        }
-
-        // 触底：着地
-        val floor = (screenHeight - petHeight).toFloat()
-        if (y >= floor) {
-            y = floor
-            if (abs(vy) > REST_SPEED) {
-                vy = -vy * RESTITUTION
-                // 落地后水平速度受摩擦衰减
-                vx /= GROUND_FRICTION
-                if (abs(vx) < REST_SPEED) vx = 0f
-            } else {
-                vy = 0f
-                grounded = true
-                flying = false
-            }
-        }
+    fun step() {
+        if (!dragging) return
+        x = dragTargetX
+        y = dragTargetY
+        clampToScreen()
     }
-
-    /** 桌宠高度（px），用于触底计算 */
-    var petHeight: Int = 200
 
     /**
      * 限制在屏幕内
@@ -196,38 +95,4 @@ class PetPhysics(
         x = x.coerceIn(0f, max(0f, (screenWidth - petWidth).toFloat()))
         y = y.coerceIn(0f, max(0f, (screenHeight - petHeight).toFloat()))
     }
-
-    /**
-     * 是否已经基本静止
-     */
-    fun isAtRest(): Boolean =
-        !dragging && !flying && abs(vx) < REST_SPEED && abs(vy) < REST_SPEED
-
-    /**
-     * 贴到左边缘
-     */
-    fun snapToLeftEdge() {
-        x = 0f
-        vx = 0f
-    }
-
-    /**
-     * 贴到右边缘
-     */
-    fun snapToRightEdge() {
-        x = (screenWidth - petWidth).toFloat()
-        vx = 0f
-    }
-
-    /**
-     * 判断是否贴在某个边缘（用于"贴边躲藏"）
-     */
-    fun isNearEdge(threshold: Int = 24): Boolean {
-        return x <= threshold || x >= screenWidth - petWidth - threshold
-    }
-
-    /**
-     * 朝向：1 表示朝右，-1 表示朝左
-     */
-    var facing = 1
 }

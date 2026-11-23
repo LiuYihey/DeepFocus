@@ -47,7 +47,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -109,6 +111,16 @@ fun FocusScreen(
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val hapticFeedback = LocalHapticFeedback.current
     val context = LocalContext.current
+
+    // 退出后才处理旅行日记：先给「点击查收」入口，不主动展开内容
+    var showJournalContent by remember { mutableStateOf(false) }
+    var exitHandled by remember { mutableStateOf(false) }
+    // 首帧 isRunning 还是 false（startFocus 在 LaunchedEffect 里），
+    // 必须等会话真的跑起来一次，才能把「isRunning=false」当成退出。
+    var hasRun by remember { mutableStateOf(false) }
+    LaunchedEffect(uiState.isRunning) {
+        if (uiState.isRunning) hasRun = true
+    }
 
     // 进入页面自动开始计时
     LaunchedEffect(Unit) {
@@ -332,19 +344,73 @@ fun FocusScreen(
         ExitConfirmDialog(
             millisToNextReward = uiState.millisToNextReward,
             rewardsEarned = uiState.rewardsEarned,
-            onConfirm = {
-                viewModel.confirmExit()
-                onExit()
-            },
+            onConfirm = { viewModel.confirmExit() },
             onDismiss = { viewModel.cancelExit() }
         )
     }
 
-    // === 她回来了：旅行日记卡片 ===
-    uiState.finishedJournal?.let { journal ->
-        TravelJournalDialog(
-            journal = journal,
-            onDismiss = { viewModel.dismissJournal() }
+    // === 退出专注后才处理旅行日记 ===
+    // 专注中日记只写进游历本，不弹窗、不展开，避免把正在专注的人拽去看内容。
+    // 退出时先给「点击查收」，点了才展开正文。
+    val pendingJournal = uiState.finishedJournal
+    if (hasRun && !uiState.isRunning) {
+        if (pendingJournal != null) {
+            if (showJournalContent) {
+                TravelJournalDialog(
+                    journal = pendingJournal,
+                    confirmLabel = "收好，去休息",
+                    onDismiss = {
+                        viewModel.dismissJournal()
+                        exitHandled = true
+                        onExit()
+                    }
+                )
+            } else {
+                TravelJournalReadyDialog(
+                    onClaim = { showJournalContent = true },
+                    onLater = {
+                        viewModel.dismissJournal()
+                        exitHandled = true
+                        onExit()
+                    }
+                )
+            }
+        } else if (!exitHandled) {
+            // 这次没生成日记（没满 15 分钟 / 生成失败），直接回首页
+            LaunchedEffect(Unit) {
+                exitHandled = true
+                onExit()
+            }
+        }
+    }
+}
+
+/**
+ * 「旅行日记已送达」入口
+ *
+ * 不直接展开正文 —— 先问一句要不要看。
+ */
+@Composable
+private fun TravelJournalReadyDialog(
+    onClaim: () -> Unit,
+    onLater: () -> Unit
+) {
+    GlassDialog(
+        onDismissRequest = onLater,
+        title = "她回来啦",
+        actions = {
+            GlassDialogActions(
+                dismissLabel = "等会儿看",
+                onDismiss = onLater,
+                confirmLabel = "点击查收",
+                onConfirm = onClaim
+            )
+        }
+    ) {
+        Text(
+            text = "趁你专注，她出门转了一圈，写下一篇游历日记。要先看看，还是先去休息？",
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurface
         )
     }
 }
@@ -358,6 +424,7 @@ fun FocusScreen(
 @Composable
 private fun TravelJournalDialog(
     journal: com.deepfocus.app.data.local.entity.TravelJournalEntity,
+    confirmLabel: String = "收进游历本",
     onDismiss: () -> Unit
 ) {
     GlassDialog(
@@ -365,7 +432,7 @@ private fun TravelJournalDialog(
         title = journal.title,
         actions = {
             GlassDialogActions(
-                confirmLabel = "收进游历本",
+                confirmLabel = confirmLabel,
                 onConfirm = onDismiss
             )
         }

@@ -1,14 +1,10 @@
-<img src="./logo.png" alt="DeepFocus Logo" width="100%" />
-<h1 align="center">DeepFocus · 深焦</h1>
+<img src="./docs/screenshots/banner.png" alt="DeepFocus Banner" width="100%" />
+<h1 align="center">DeepFocus · 深度专注</h1>
 <p align="center">
-  <strong>一条大肥鱼陪你专注，专注攒下的白饭喂给它</strong>
+  <strong>专注攒下的每一份大白饭，都喂给等你的那条鱼</strong>
 </p>
 <p align="center">
   <a href="https://github.com/LiuYihey/DeepFocus/releases">下载 APK</a>
-  ·
-  <a href="docs/桌宠设计.md">桌宠设计</a>
-  ·
-  <a href="docs/专注页视频Prompt.md">专注视频 Prompt</a>
 </p>
 
 ---
@@ -17,23 +13,30 @@
 
 想专注，却总在「再看一眼」里把一下午看没了？
 
-**DeepFocus（深焦）** 把专注做成一件事：你坐得住，鱼就有饭吃。
+**DeepFocus（深度专注）** 把专注做成一件事：你坐得住，鱼就有饭吃。
 
 - **专注计时** — 全屏旅行影像 + 计时器，进入即开始，不用配置一堆参数
 - **大白饭奖励** — 每专注 30 分钟攒 1 份大白饭，单次最多 5 份
 - **大肥鱼养成** — 投喂、好感度、成就；点一下白饭，它真的抱着碗吃
 - **桌面陪伴** — 悬浮桌宠安静待在屏幕上，不自己乱跑，也不随机说话
 - **AI 对话** — 自带人格卡，也可以接任意 OpenAI 兼容 API；它会记得你们聊过什么
-- **游历本** — 专注满 15 分钟，它会出门旅行，带回一篇日记和一张插画
+- **游历本** — 专注满 15 分钟它在路上写日记，退出专注后才提醒你查收
 - **应用守护**（可选）— 专注时切去娱乐 App，会被温柔地拉回来
 
 把「硬撑」变成「有人在等你回家吃饭」。
 
-<p align="center">
-  <img src="./docs/screenshots/home.png" width="30%" alt="首页" />
-  &nbsp;&nbsp;
-  <img src="./docs/screenshots/focus.png" width="30%" alt="专注页" />
-</p>
+<table>
+  <tr>
+    <td width="33%" align="center"><img src="./docs/screenshots/home.png" width="100%" alt="首页" /><br /><sub><b>首页</b> · 它今天的心情与投喂</sub></td>
+    <td width="33%" align="center"><img src="./docs/screenshots/focus.png" width="100%" alt="专注页" /><br /><sub><b>专注页</b> · 夜间航班与大白饭进度</sub></td>
+    <td width="33%" align="center"><img src="./docs/screenshots/pet.png" width="100%" alt="桌宠" /><br /><sub><b>桌面桌宠</b> · 安静待着，不打扰</sub></td>
+  </tr>
+  <tr>
+    <td width="33%" align="center"><img src="./docs/screenshots/chat.png" width="100%" alt="聊天" /><br /><sub><b>主动消息</b> · 它会记得问你进度</sub></td>
+    <td width="33%" align="center"><img src="./docs/screenshots/travel.png" width="100%" alt="游历本" /><br /><sub><b>游历本</b> · 每趟旅行都有日记和插画</sub></td>
+    <td width="33%"></td>
+  </tr>
+</table>
 
 ---
 
@@ -48,7 +51,7 @@
 | 桌宠消息 | 只有 Agent 主动消息会冒气泡；TODO 催办走通知栏 |
 | AI 对话 | 支持文字 / 图片；发图后可以先写配文，再一起发送 |
 | 人格卡 | 内置 6 张卡，可按好感度解锁；也可自己写一张 |
-| 游历本 | 专注满 15 分钟触发旅行，生成目的地、日记与插画 |
+| 游历本 | 专注满 15 分钟在路上写日记，退出专注后点击查收 |
 | 应用守护 | 无障碍 + 使用情况访问，检测到分心 App 时拉起反思页 |
 | 数据本地 | 聊天、记忆、鱼的状态全部存在本机 SQLite |
 
@@ -135,9 +138,8 @@ DeepFocus/
 │   └── src/main/res/           # 资源与 Manifest
 ├── artwork/                    # 素材源文件与生成脚本的输入
 ├── tools/                      # 素材处理脚本（Python）
-├── docs/                       # 设计文档与截图
+├── docs/screenshots/           # README 截图与横幅
 ├── archive/                    # 归档：旧工具、旧素材、历史测试与截图
-├── logo.png                    # 项目 Logo
 ├── build.gradle.kts            # 顶层构建配置
 ├── settings.gradle.kts         # 模块配置
 ├── gradle.properties.example   # 签名配置模板（不含密钥）
@@ -170,8 +172,6 @@ DeepFocus/
 - 内置人格卡正文（`assets/personas/builtin_cards.json`，6 张）来自 dsh 生态的
   高 star 开源仓库，MIT 许可，署名见 `artwork/persona_sources/MANIFEST.md`
 - 未打包任何 Sketchfab / MakerWorld 的 NC 授权 3D 模型（避免授权风险）
-
-> 素材生成流水线与踩坑记录见 [docs/视频资产清单.md](docs/视频资产清单.md)。
 
 ## 致谢
 

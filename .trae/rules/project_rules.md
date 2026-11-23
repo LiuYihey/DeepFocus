@@ -1102,3 +1102,11 @@ python tools/media/make_sheet.py            # 生成表情包图墙（校对描�
   内部用单引号把 `sh -c` 的命令串包起来 ——
   否则 `&&` 和 `>` 会被设备端最外层 shell 拆开，
   重定向跑在外层 shell（shell 用户），文件根本写不进 App 沙盒，**且不报错**。
+
+## 版本号与 Release
+
+- **默认不改版本号。** 任何 APK 更新都保持 `versionCode` / `versionName` 不变，
+  除非用户明确说「改版本号」。
+- 更新发布时，直接覆盖 GitHub Release 上同版本号的旧 APK：
+  `gh release upload v<版本> <apk> --clobber`，保留原 tag 与 release。
+- Release 标题统一为 `DeepFocus v<版本> — 深度专注`，不使用其他别名。

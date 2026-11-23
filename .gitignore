@@ -81,3 +81,6 @@ __pycache__/
 
 # 视频压缩中间产物
 *.compressed.mp4
+
+# 设计文档只留本地，不上传 GitHub
+/archive/private_docs/

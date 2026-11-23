@@ -32,9 +32,9 @@
     <td width="33%" align="center"><img src="./docs/screenshots/pet.png" width="100%" alt="桌宠" /><br /><sub><b>桌面桌宠</b> · 安静待着，不打扰</sub></td>
   </tr>
   <tr>
-    <td width="33%" align="center"><img src="./docs/screenshots/chat.png" width="100%" alt="聊天" /><br /><sub><b>主动消息</b> · 它会记得问你进度</sub></td>
+    <td width="33%" align="center"><img src="./docs/screenshots/chat.png" width="100%" alt="主动消息" /><br /><sub><b>主动消息</b> · 它会记得问你进度</sub></td>
+    <td width="33%" align="center"><img src="./docs/screenshots/chat-image.png" width="100%" alt="带图聊天" /><br /><sub><b>带图聊天</b> · 它真的能看到图</sub></td>
     <td width="33%" align="center"><img src="./docs/screenshots/travel.png" width="100%" alt="游历本" /><br /><sub><b>游历本</b> · 每趟旅行都有日记和插画</sub></td>
-    <td width="33%"></td>
   </tr>
 </table>
 

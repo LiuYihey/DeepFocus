@@ -120,7 +120,6 @@ cp gradle.properties.example gradle.properties
 - **架构**：MVVM + Hilt 依赖注入
 - **数据库**：Room（KSP）
 - **视频**：Media3 ExoPlayer（专注页静音循环）
-- **图片**：Coil 未引入，贴图走 assets + 自绘 Canvas
 - **最低系统**：Android 8.0（API 26）
 - **目标系统**：Android 15（API 35）
 

@@ -19,8 +19,8 @@ android {
         //   2. 统计页改为 AI 对话页：大肥鱼可感知应用使用与专注时长
         //   3. 人格卡可自定义 + 用户自填 OpenAI 兼容 API 长期存储
         //   4. 主动性引擎：按概率掷骰触发大肥鱼主动行为
-        versionCode = 100
-        versionName = "1.0.0"
+        versionCode = 101
+        versionName = "1.0.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {

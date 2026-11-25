@@ -115,8 +115,8 @@ fun TravelJournalScreen(
                 item {
                     EmptyState(
                         icon = Icons.Filled.Palette,
-                        title = "她还没出过远门",
-                        description = "专注满 15 分钟，她会自己挑个地方去一趟，回来写日记。"
+                        title = "它还没出过远门",
+                        description = "专注满 15 分钟，它会自己挑个地方去一趟，回来写日记。"
                     )
                 }
             }
@@ -309,7 +309,7 @@ private fun JournalCard(
 
                 if (journal.imagePath == null && !imageApiReady) {
                     Text(
-                        text = "她还不会画画 —— 去设置里填一个生图 API 就能补相片。",
+                        text = "它还不会画画 —— 去设置里填一个生图 API 就能补相片。",
                         style = MaterialTheme.typography.labelSmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )

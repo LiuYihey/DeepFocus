@@ -59,7 +59,7 @@ object SeedData {
             AffinityAchievementEntity(
                 milestone = 10,
                 title = "初识之友",
-                description = "好感度 10，大肥鱼开始信任你\n【奖励】解锁添加新伙伴资格"
+                description = "好感度 10，大肥鱼开始信任你"
             ),
             AffinityAchievementEntity(
                 milestone = 50,

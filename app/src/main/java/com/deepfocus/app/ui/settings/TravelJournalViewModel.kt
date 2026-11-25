@@ -221,7 +221,7 @@ class TravelJournalViewModel @Inject constructor(
     private fun buildPhotoPrompt(journal: TravelJournalEntity): String {
         val idea = journal.photoIdea?.trim().orEmpty()
         val ideaLine = if (idea.isNotEmpty()) {
-            "她自己在旅行时想好的这一秒是：「$idea」——照她想的那样画。"
+            "它自己在旅行时想好的这一秒是：「$idea」——照它想的那样画。"
         } else {
             "这一秒具体拍什么由你决定。"
         }
@@ -238,11 +238,11 @@ class TravelJournalViewModel @Inject constructor(
 背景、光线、景深都跟着人物的画风走。
 
 【场景】
-她正在${journal.destination}旅行，这一刻的氛围是「${journal.mood}」，画面里要有当地特色。
+它正在${journal.destination}旅行，这一刻的氛围是「${journal.mood}」，画面里要有当地特色。
 场景怎么搭、镜头怎么取、光线怎么打，你自己发挥，只要跟人物的画风搭得上就行。
 
 【形式】
-画面形式由她自己挑一种最合适的：自拍、别人帮她拍、或者画成漫画分镜。
+画面形式由它自己挑一种最合适的：自拍、别人帮它拍、或者画成漫画分镜。
 哪种最贴切就选哪种，不用有偏好。
 
 【这一秒拍什么】

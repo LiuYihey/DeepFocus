@@ -454,7 +454,7 @@ private fun ChatBubble(
                 if (bitmap != null) {
                     Image(
                         bitmap = bitmap.asImageBitmap(),
-                        contentDescription = "发给她看的图",
+                        contentDescription = "发给它看的图",
                         contentScale = ContentScale.Crop,
                         modifier = Modifier
                             .widthIn(max = 200.dp)
@@ -740,7 +740,7 @@ private fun ChatInputBar(
             IconButton(onClick = onPickImage, enabled = !isReplying) {
                 Icon(
                     imageVector = Icons.Filled.AddPhotoAlternate,
-                    contentDescription = "发一张图给她看",
+                    contentDescription = "发一张图给它看",
                     tint = MaterialTheme.colorScheme.primary.copy(alpha = 0.75f),
                     modifier = Modifier.size(22.dp)
                 )
@@ -825,7 +825,7 @@ private fun ConversationHistorySheet(
             )
             Spacer(modifier = Modifier.height(4.dp))
             Text(
-                text = "开新对话不会让她失忆 —— 旧对话只是归档，她还记得聊过什么。",
+                text = "开新对话不会让它失忆 —— 旧对话只是归档，它还记得聊过什么。",
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )

@@ -84,3 +84,7 @@ __pycache__/
 
 # 设计文档只留本地，不上传 GitHub
 /archive/private_docs/
+/archive/
+
+# 过时的动作素材备份（16:9 版本），已归档到工作区 archive/
+/artwork/_anim_backup_16x9/

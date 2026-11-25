@@ -169,7 +169,7 @@ fun ImageGenSettingsScreen(
             )
 
             Text(
-                text = "提示：每次生图都会带上当前装扮的参考图，这样画出来的才是她本人。",
+                text = "提示：每次生图都会带上当前装扮的参考图，这样画出来的才是它本人。",
                 style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )

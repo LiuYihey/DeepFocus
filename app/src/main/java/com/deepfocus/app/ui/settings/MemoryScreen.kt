@@ -87,8 +87,8 @@ fun MemoryScreen(
                 item {
                     EmptyState(
                         icon = Icons.Filled.Psychology,
-                        title = "她还没记住关于你的事",
-                        description = "跟她聊点你喜欢的、最近在忙什么 —— 她会自己记下来，下次接着聊。"
+                        title = "它还没记住关于你的事",
+                        description = "跟它聊点你喜欢的、最近在忙什么 —— 它会自己记下来，下次接着聊。"
                     )
                 }
             }

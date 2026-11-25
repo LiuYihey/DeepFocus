@@ -66,7 +66,7 @@ object FishOutfits {
     val NORMAL = FishOutfit(
         id = NORMAL_ID,
         displayName = "常服",
-        description = "她最常穿的样子，走哪儿都合适",
+        description = "它最常穿的样子，走哪儿都合适",
         portraitAssetPath = "fish/bigfatfish.png",
         temperature = FishOutfitTemperature.WARM,
         hasAnimatedVariant = true

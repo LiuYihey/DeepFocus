@@ -98,7 +98,7 @@ fun FishSelectionScreen(
         )
         Spacer(modifier = Modifier.height(6.dp))
         Text(
-            text = "挑一套她今天的样子，之后在设置里随时能换",
+            text = "挑一套它今天的样子，之后在设置里随时能换",
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             fontSize = 13.sp
         )

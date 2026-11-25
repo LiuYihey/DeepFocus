@@ -22,6 +22,15 @@ DeepFocus 是**大肥鱼专注陪伴 App**。只有三条主线：
 - **不写多余的二级标签和说明文字**，让布局自己说话。
   页首解释句、开关下方补充说明、状态旁白、重复的小标题 —— 全删。
 - 只保留必要信息：空态引导、权限说明、合规提示、密钥安全说明。
+- **大肥鱼一律用「它」指代，不用「她」**（2026-11-24 定稿）。
+  它是鱼，不是人。UI 文案、AI 提示词、种子数据、宣传物料全部统一。
+  已全量改完：成就描述 / 设置 / 记忆 / 游历本 / 专注页 / 聊天 / 生图设置 /
+  人格卡选鱼 / 旅行工作流提示词 / 投喂 / 成就弹窗。
+  写新文案时注意别把「她」写回去。
+- **成就弹窗要一行放得下**（2026-11-24 定稿）。
+  用 `usePlatformDefaultWidth = false` 铺满屏宽，
+  「成就解锁 / 称号 / 描述」各占一行，描述不折行、`maxLines = 2` 兜底。
+  不要把奖励写进描述里再靠 `\n` 断行 —— 那样在窄屏上会碎成三四行。
 
 ### 0.3 UI 高定规范（严格执行，逐条可查）
 
@@ -1110,3 +1119,71 @@ python tools/media/make_sheet.py            # 生成表情包图墙（校对描�
 - 更新发布时，直接覆盖 GitHub Release 上同版本号的旧 APK：
   `gh release upload v<版本> <apk> --clobber`，保留原 tag 与 release。
 - Release 标题统一为 `DeepFocus v<版本> — 深度专注`，不使用其他别名。
+
+### 版本号策略（2026-11-24 用户明确）
+
+> 用户原话：「注意我们的项目rule里增加小幅改动不变版本号，只覆盖之前的apk，
+> 只有我说更新版本号时才更新。所以一直都是1.0.0版本，
+> 现在的GitHub的1.0.1版本不需要，我们在视频发出之前都保持1.0.0版本。」
+
+- **当前版本固定为 `1.0.0`（`versionCode = 100`）。**
+- **小幅改动（文案 / UI 微调 / 修 bug / 换图标 / 素材替换）一律不改版本号** ——
+  重新构建后用 `--clobber` 覆盖 `v1.0.0` 上已有的 APK 即可。
+- **只有用户明确说「改版本号 / 发新版本」时**才递增 `versionCode` 并新建 tag。
+- **不要新建 `v1.0.1` 之类的 tag**：未发布新版本前，GitHub 上只保留 `v1.0.0`。
+  如果历史上误建了更高版本的 release，在用户确认前不要动它；
+  用户说「不需要」时，删掉那个多余 tag/release，把 APK 发布回 `v1.0.0`。
+- 发布视频/宣发物料之前，线上 APK 的版本号必须是 `1.0.0`。
+
+## 宣传视频制作（2026-11-25）
+
+- **宣传片统一走 `video-production` skill**（`~/.agents/skills/video-production`）。
+  它是编排层，负责：需求分诊 → 素材采集 → 时间轴编排 → 动效与镜头 → 音效 → 渲染 →
+  编码 → 实测验收 → 交付与归档。
+- **动效风格与音效交给专项 skill**（均在 `~/.agents/skills/`）：
+  - `brand-launch-video-star`（发布片主流程）/ `pixel2motion`（PNG→动效 SVG）/
+    `disney-animation-rule-skill`（动效质量判断）/`procedural-fish-render` 等
+    vibe-motion 全家桶 → 来源 `https://github.com/LiuYihey/vibe-motion`
+  - `sound`（Freesound 真实录音检索，**优先真实素材而非合成音**）→
+    来源 `https://github.com/LiuYihey/sound-skill`
+  - `sound-effects`（混音标准，**做音频前必读**）
+- **工程位置**：`marketing/deepfocus-promo-v7/`（当前版本），
+  旧版本归档在 `marketing/_archive/`。目录说明见该目录下的 `README.md`。
+- **成片验收硬指标**（必须实测，不靠感觉）：
+  - 音频整体响度 **≈ -16 LUFS**，真实峰值 **< -4 dBFS**，立体声与单声道都要测。
+  - 文字不得溢出、不得压到手机模型或主体；主标题走顶部安全区，补充句走底部条带。
+  - 相机为**单一关键帧轨道**，逐帧位移无跳变，进场缩放不得回弹。
+  - 轨迹线不得有极小弯折（转角符号翻转次数 = 0），且轨迹必须**晚于**主体出现。
+- **动效原则**：一行一句、一次只说一件事；不做重复动效；不用红色做强调；
+  矢量素材不用扁平三角占位；文案按用户原话，不改写。
+
+## 工作区目录约定（2026-11-26 整理）
+
+- **根目录只保留**：`DeepFocus/`、`FocusCat/`、`web-demo/`（三个独立 GitHub 仓库）、
+  `marketing/`（宣传片工程）、`archive/`（本地归档）、`deliverables/`（最新交付物）、
+  `docs/`。其余一律归档。
+- **有远端或未提交改动的东西不是归档，是项目。** 任何带 GitHub remote、
+  或有未推送提交 / 未提交改动的目录，都留在工作区根目录，哪怕它看起来很旧。
+  （`web-demo` 曾被误放进 `archive/`，2026-11-26 已移回根目录。）
+- **归档区只读、不维护、不入库**：`archive/`、`marketing/_archive/`、
+  `marketing/_shared/`、`deliverables/` 均在根 `.gitignore` 中。
+  `DeepFocus/.gitignore` 已加 `/archive/` 规则，设计文档与废弃脚本不上传 GitHub。
+- **可再生产物随时可删**：`app/build/`、`.gradle/`、`node_modules/`、`__pycache__/`、
+  `audio.wav`（可用 `make_audio.py` 重生成）。但 `app/build/outputs/apk/release/`
+  里的成 APK 要保留一份到 `deliverables/apk/`，因为用户会去那里找。
+- **整理必须不改变产物。** 清理前后用「逐条目 CRC 比对」验证 APK 打包内容一致
+  （**不要比字节**——APK 签名不可复现，SHA 必然不同），确认 0 changed 才算完成。
+  脚本见 `~/.agents/skills/project-tidying/`。
+- **素材源文件只放 `DeepFocus/artwork/`**，不散落在仓库根目录；根目录同一类型的资产
+  只留一份。App 图标的唯一源是 `artwork/icon_src/launcher_maid.png`
+  （根目录的 `App图标.png` / `logo.png` / `New Logo.png` 三份已归档）。
+- **`.kts` / `gradle` / `manifest` / `proguard` 文件不可删。** 它们是构建必需的，
+  不是「某个工具专属的临时文件」。已实测：删掉 `settings.gradle.kts` 或
+  `app/build.gradle.kts` 都会直接 `BUILD FAILED`。
+- **两个仓库互不引用**：不把一个项目的文件挪进另一个。DeepFocus 仅引用
+  `FocusCat/app/src/main/assets/cats/` 的两个 PNG（布偶 / 橘猫）。
+- **Skills 一律装全局** `~/.agents/skills/`，不放工作区 `.agents/skills/`
+  或 `.trae/skills/`。新增 skill 用 `curl codeload.github.com/<owner>/<repo>/zip`，
+  `git clone` 在本网络不稳定。
+- **字体等共用资源收敛到 `marketing/_shared/`**，避免每个历史版本各存一份
+  （字体 41MB × 3 份已合并为 1 份）。

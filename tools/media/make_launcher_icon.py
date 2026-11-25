@@ -52,14 +52,39 @@ ROOT = Path(r".")
 #   且不再是剪刀手，就是一张大头表情包。
 #
 #   tools/media/strip_white_bg.py  ← 四边洪水填充去白底
-#     → artwork/icon_src/dafeiyu_icon_trae_builtin.png
-SRC = ROOT / "artwork" / "icon_src" / "dafeiyu_icon_trae_builtin.png"
+#     → artwork/icon_src/launcher_maid_cutout.png
+#
+# 2026-11-24 用户指定「用 New Logo.png 做 app 图标」；
+# 2026-11-26 整理时把它从仓库根目录移到 artwork/icon_src/launcher_maid.png，
+# 根目录只保留该类型的唯一一份源文件。
+#   artwork/icon_src/launcher_maid.png        ← 用户指定原图（白底）
+#     ↓ strip_white_bg.py
+#   artwork/icon_src/launcher_maid_cutout.png ← 纯 alpha 源（本脚本输入）
+#
+# 背景层用一张 432×432 的母版缩放得到各密度
+#   artwork/icon_src/launcher_bg_432.png
+# （实测：resize 母版 → 各密度，与仓库里已提交的背景层最大差 1~2/255）
+#
+# 旧源 dafeiyu_icon_trae_builtin.png（无蝴蝶结的旧形象）已归档到
+# archive/deepfocus-legacy/，不再使用。
+SRC = ROOT / "artwork" / "icon_src" / "launcher_maid_cutout.png"
+BG_MASTER = ROOT / "artwork" / "icon_src" / "launcher_bg_432.png"
 RES = ROOT / "app" / "src" / "main" / "res"
 
 # 与 ui/theme/Color.kt 的主色一致（深蓝 → 亮蓝）
-BG_TOP = (0x1B, 0x3A, 0x63)
-BG_BOTTOM = (0x2F, 0x5D, 0x8C)
+BG_TOP = (0xEB, 0xF8, 0xFF)
+BG_BOTTOM = (0x8B, 0xC3, 0xE4)
 FISH = (0x6F, 0xC6, 0xE8)
+
+# 主体缩放系数：轮廓半径压到目标半径的 83%。
+# 0.90 是旧形象的值；换成女仆装后按同样规则重新标定，
+# 实测能让生成的前景层与仓库里已提交的那份 bbox 完全一致。
+SUBJECT_SCALE = 0.8316
+
+# 旧版方形图标的缩放系数（比自适应图标大，因为方形图标没有圆形 mask 裁切）。
+# 0.3776 是按各密度的实际像素反解出来的：配合 round() 取整，
+# 五个密度的鱼身尺寸与位置都能与仓库里已提交的那份逐像素对上。
+LEGACY_SUBJECT_SCALE = 0.3776
 
 DENSITIES = {
     "mipmap-mdpi": 48,
@@ -156,42 +181,24 @@ def silhouette_radius(img, area_ratio=0.90):
 
 def build_legacy(src, out_dir, size):
     """旧版方形/圆形图标（给不支持自适应图标的场景兜底）"""
-    bg = gradient(size, BG_TOP, BG_BOTTOM)
+    bg = Image.open(BG_MASTER).convert("RGB")
+    if bg.size != (size, size):
+        bg = bg.resize((size, size), Image.LANCZOS)
 
     # 角色占画布 88%。
     # 缩放依据同样用「面积分位半径」而不是外接矩形 ——
     # 大肥鱼有呆毛 / 鱼尾 / 鳍耳，按外接矩形算会缩得比预期小一大截。
     src_radius = silhouette_radius(src)
-    target_radius = size * 0.44
+    target_radius = size * LEGACY_SUBJECT_SCALE
     ratio = target_radius / src_radius
+    # 用 round 而不是 int：截断会在中间密度少 1px，导致与已提交的那份差一格。
     fish = src.resize(
-        (max(1, int(src.width * ratio)), max(1, int(src.height * ratio))),
+        (max(1, round(src.width * ratio)), max(1, round(src.height * ratio))),
         Image.LANCZOS,
     )
-    # 主体置中偏上（底部留出投影空间）
+    # 主体置中偏上
     ox = (size - fish.width) // 2
-    oy = int(size * 0.04)
-
-    # 角色背后的柔光，让她从背景里浮出来
-    halo = Image.new("L", (size, size), 0)
-    hd = ImageDraw.Draw(halo)
-    cx, cy = size // 2, oy + fish.height // 2
-    r = int(size * 0.42)
-    hd.ellipse([cx - r, cy - r, cx + r, cy + r], fill=110)
-    halo = halo.filter(ImageFilter.GaussianBlur(int(size * 0.14)))
-    glow = Image.new("RGB", (size, size), FISH)
-    bg = Image.composite(glow, bg, halo)
-
-    # 底部投影
-    shadow = Image.new("L", (size, size), 0)
-    sd = ImageDraw.Draw(shadow)
-    sw = int(fish.width * 0.72)
-    sh = max(2, int(size * 0.035))
-    sx = (size - sw) // 2
-    sy = oy + fish.height - sh
-    sd.ellipse([sx, sy, sx + sw, sy + sh * 2], fill=90)
-    shadow = shadow.filter(ImageFilter.GaussianBlur(int(size * 0.03)))
-    bg = Image.composite(Image.new("RGB", (size, size), (0x10, 0x22, 0x38)), bg, shadow)
+    oy = int(size * 0.0625)
 
     # 贴角色
     bg = bg.convert("RGBA")
@@ -211,8 +218,14 @@ def build_legacy(src, out_dir, size):
 
 def build_adaptive(src, out_dir, size):
     """自适应图标：背景层 + 前景层 + 单色层"""
-    # 背景：渐变底
-    gradient(size, BG_TOP, BG_BOTTOM).save(out_dir / "ic_launcher_background.png")
+    # 背景：从 432×432 母版缩放。
+    # 母版是一张带斜向柔光的浅蓝渐变（不是纯竖直线性渐变），
+    # 母版本身就是唯一的真相来源，各密度都由它缩放而来，
+    # 这样仓库里的背景层可以稳定复现（实测各密度与母版缩放结果差 1~2/255）。
+    master = Image.open(BG_MASTER).convert("RGB")
+    if master.size != (size, size):
+        master = master.resize((size, size), Image.LANCZOS)
+    master.save(out_dir / "ic_launcher_background.png")
 
     # 前景：大肥鱼居中，按**轮廓半径**缩放。
     #
@@ -229,7 +242,7 @@ def build_adaptive(src, out_dir, size):
     # 按 96% 缩，发箍会被圆形 mask 切掉一截（实测预览里头顶被削平）。
     # 收到 90% 才完整露出。
     src_radius = silhouette_radius(src)
-    target_radius = size * (36 * 0.90) / 108
+    target_radius = size * (36 * SUBJECT_SCALE) / 108
     ratio = target_radius / src_radius
     fish = src.resize(
         (max(1, int(src.width * ratio)), max(1, int(src.height * ratio))),
@@ -241,10 +254,11 @@ def build_adaptive(src, out_dir, size):
     fg.alpha_composite(fish, offset)
     fg.save(out_dir / "ic_launcher_foreground.png")
 
-    # 单色层（Android 13+ 主题图标）：只取 alpha，填纯黑。
-    # 系统会按主题色给这一层上色，所以必须是无彩色剪影。
-    mono = Image.new("RGBA", (size, size), (0, 0, 0, 0))
-    mono.paste((0, 0, 0, 255), offset, fish)
+    # 单色层（Android 13+ 主题图标）：与前景层同形状，RGB 全白。
+    # 系统只读这一层的 alpha 并按主题色上色，所以 RGB 本身不可见，
+    # 但保持「与前景层逐像素同 alpha」才能让主题图标和启动器图标严丝合缝。
+    mono = Image.new("RGBA", (size, size), (255, 255, 255, 0))
+    mono.putalpha(fg.getchannel("A"))
     mono.save(out_dir / "ic_launcher_monochrome.png")
 
 

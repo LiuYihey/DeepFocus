@@ -397,7 +397,7 @@ private fun TravelJournalReadyDialog(
 ) {
     GlassDialog(
         onDismissRequest = onLater,
-        title = "她回来啦",
+        title = "它回来啦",
         actions = {
             GlassDialogActions(
                 dismissLabel = "等会儿看",
@@ -408,7 +408,7 @@ private fun TravelJournalReadyDialog(
         }
     ) {
         Text(
-            text = "趁你专注，她出门转了一圈，写下一篇游历日记。要先看看，还是先去休息？",
+            text = "趁你专注，它出门转了一圈，写下一篇游历日记。要先看看，还是先去休息？",
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurface
         )

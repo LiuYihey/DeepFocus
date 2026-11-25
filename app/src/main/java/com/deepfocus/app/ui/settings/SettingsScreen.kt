@@ -279,7 +279,7 @@ fun SettingsScreen(
                 IosNavigationRow(
                     icon = Icons.Filled.Map,
                     title = "游历本",
-                    subtitle = "她去过的地方，都记在这里",
+                    subtitle = "它去过的地方，都记在这里",
                     onClick = {
                         hapticFeedback.performHapticFeedback(HapticFeedbackType.TextHandleMove)
                         onNavigateToJournals()

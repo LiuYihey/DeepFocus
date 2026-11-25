@@ -126,9 +126,9 @@ class TravelWorkflow @javax.inject.Inject constructor(
 
 角色：$persona
 $visitedHint
-她现在穿着${outfit.displayName}，倾向于去$temperatureWord。
+它现在穿着${outfit.displayName}，倾向于去$temperatureWord。
 
-请从下面这些地方里挑**一个**她这次最想去的：
+请从下面这些地方里挑**一个**它这次最想去的：
 ${candidates.joinToString("\n")}
 
 输出格式（严格 JSON，一行）：
@@ -158,16 +158,16 @@ ${candidates.joinToString("\n")}
 
 角色：$persona
 地点：${destination.name}（${destination.reason}）
-她穿着${outfit.displayName}。
+它穿着${outfit.displayName}。
 
-请围绕这个地点，编一件她在那里**真实可能遇到**的小事。
+请围绕这个地点，编一件它在那里**真实可能遇到**的小事。
 要求：
 1. 要有当地的血肉 —— 风土人情、历史背景、有趣的传说、具体的景点或当地人
 2. 要小而具体，不要「看风景」这种空话，最好有一个人或一个意外
-3. 要有人物 —— 她遇到了谁
+3. 要有人物 —— 它遇到了谁
 
 输出格式（严格 JSON，一行）：
-{"event":"一句话说发生了什么","people":"她遇到的人（逗号分隔，没有就写空）","photoIdea":"如果这一刻要拍一张相片，会拍什么？包括是自拍、别人拍她、还是画成漫画"}
+{"event":"一句话说发生了什么","people":"它遇到的人（逗号分隔，没有就写空）","photoIdea":"如果这一刻要拍一张相片，会拍什么？包括是自拍、别人拍它、还是画成漫画"}
 """.trimIndent()
 
         val raw = chatJson(config, "事件", prompt)

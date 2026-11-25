@@ -407,7 +407,7 @@ fun FishScreen(
                             text = if (isMax) {
                                 "已经离不开你了，累计投喂 ${userFish.totalFeedCount} 次"
                             } else {
-                                "多陪陪她，就能换下一个称号"
+                                "多陪陪它，就能换下一个称号"
                             },
                             color = dimColor,
                             style = MaterialTheme.typography.bodySmall
@@ -721,7 +721,11 @@ private fun AchievementCelebrationDialog(
             // 成就解锁是用户长期投入的高峰时刻，禁止点击 scrim 误关
             // 仅允许"太棒了！"按钮或返回键关闭，避免手抖错过庆祝
             dismissOnClickOutside = false,
-            dismissOnBackPress = true
+            dismissOnBackPress = true,
+            // 用满屏宽：平台默认宽度只有屏幕的 65%~80%，
+            // 成就名 + 描述会被挤成两三行短句，读起来支离破碎。
+            // 铺满后一行放得下，庆祝信息才是「一句话」。
+            usePlatformDefaultWidth = false
         )
     ) {
         Box(
@@ -742,7 +746,7 @@ private fun AchievementCelebrationDialog(
                 Card(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(32.dp),
+                        .padding(horizontal = 28.dp, vertical = 32.dp),
                     shape = androidx.compose.foundation.shape.RoundedCornerShape(24.dp),
                     colors = CardDefaults.cardColors(
                         containerColor = cardColor
@@ -753,7 +757,7 @@ private fun AchievementCelebrationDialog(
                     Column(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(36.dp),
+                            .padding(horizontal = 28.dp, vertical = 32.dp),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         // 庆祝图标（矢量 Material Icon，替代 emoji）
@@ -761,29 +765,34 @@ private fun AchievementCelebrationDialog(
                             imageVector = Icons.Filled.Celebration,
                             contentDescription = null,
                             tint = accentColor,
-                            modifier = Modifier.size(64.dp)
+                            modifier = Modifier.size(56.dp)
                         )
-                        Spacer(modifier = Modifier.height(16.dp))
+                        Spacer(modifier = Modifier.height(14.dp))
                         Text(
-                            text = "成就解锁！",
+                            text = "成就解锁",
                             color = accentColor,
-                            style = MaterialTheme.typography.headlineSmall
+                            style = MaterialTheme.typography.labelLarge,
+                            letterSpacing = 2.sp
                         )
-                        Spacer(modifier = Modifier.height(12.dp))
+                        Spacer(modifier = Modifier.height(8.dp))
                         Text(
                             text = achievement.title,
                             color = textColor,
                             style = MaterialTheme.typography.headlineMedium,
                             textAlign = TextAlign.Center
                         )
-                        Spacer(modifier = Modifier.height(8.dp))
+                        Spacer(modifier = Modifier.height(10.dp))
+                        // 描述单独一行，不再把「奖励」拼进同一串里折行
                         Text(
                             text = achievement.description,
                             color = dimColor,
                             fontSize = 15.sp,
-                            textAlign = TextAlign.Center
+                            lineHeight = 22.sp,
+                            textAlign = TextAlign.Center,
+                            maxLines = 2,
+                            overflow = TextOverflow.Ellipsis
                         )
-                        Spacer(modifier = Modifier.height(24.dp))
+                        Spacer(modifier = Modifier.height(26.dp))
                         PrimaryButton(
                             text = "太棒了！",
                             onClick = {

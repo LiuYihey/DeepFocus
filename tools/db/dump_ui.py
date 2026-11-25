@@ -8,11 +8,13 @@
 注意：PowerShell 里内联 python 里的正则 `[^"]` 会被引号规则吃掉，
 所以这个脚本单独成文件。
 """
+import os
 import re
 import subprocess
 import sys
 
-ADB = r"adb"
+ADB = os.path.join(
+    os.environ.get("LOCALAPPDATA", ""), "Android", "Sdk", "platform-tools", "adb.exe")
 
 
 def dump():

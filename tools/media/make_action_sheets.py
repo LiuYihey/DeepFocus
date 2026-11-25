@@ -13,13 +13,12 @@ import sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 APP = os.path.dirname(os.path.dirname(HERE))
+sys.path.insert(0, HERE)
+from _toolpaths import FFMPEG  # noqa: E402
+
 GIF_DIR = os.path.join(APP, "artwork", "pet_gif")
 OUT_DIR = os.path.join(APP, "artwork", "action_sheets")
 TMP = os.path.join(APP, "artwork", "action_tmp")
-
-FFMPEG = (r"C:\Users\<user>\AppData\Local\Microsoft\WinGet\Packages"
-          r"\Gyan.FFmpeg_Microsoft.Winget.Source_8wekyb3d8bbwe"
-          r"\ffmpeg-8.1.2-full_build\bin\ffmpeg.exe")
 
 CW, CH = 200, 112         # 单帧尺寸
 FRAMES = 2                # 每格几帧

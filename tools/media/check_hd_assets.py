@@ -5,7 +5,7 @@ from pathlib import Path
 
 from PIL import Image, ImageSequence
 
-ROOT = Path(r".")
+ROOT = Path(__file__).resolve().parents[2]
 DEST = ROOT / "app" / "src" / "main" / "assets" / "pet" / "anim" / "all"
 
 files = sorted(DEST.glob("*.webp"))

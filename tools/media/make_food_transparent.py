@@ -19,7 +19,7 @@ from pathlib import Path
 
 from PIL import Image
 
-ROOT = Path(r".")
+ROOT = Path(__file__).resolve().parents[2]
 SRC = ROOT / "app" / "src" / "main" / "assets" / "foods" / "大白饭.png"
 BACKUP = ROOT / "artwork" / "foods_backup" / "大白饭_白底.png"
 

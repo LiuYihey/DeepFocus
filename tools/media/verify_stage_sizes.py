@@ -15,7 +15,7 @@ import json
 import re
 from pathlib import Path
 
-ROOT = Path(r".")
+ROOT = Path(__file__).resolve().parents[2]
 D = ROOT / "app" / "src" / "main" / "assets" / "pet" / "anim" / "all"
 BBOX = ROOT / "tools" / "media" / "anim_bbox.json"
 CAT = ROOT / "app" / "src" / "main" / "java" / "com" / "deepfocus" / "app" / "pet" / "StageCatalog.kt"

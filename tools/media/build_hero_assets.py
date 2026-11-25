@@ -31,16 +31,15 @@ from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parents[1]
+sys.path.insert(0, str(HERE))
+from _toolpaths import FFMPEG  # noqa: E402
+
 WEBM_DIR = ROOT / "artwork" / "pet_webm"
 DEST = ROOT / "app" / "src" / "main" / "assets" / "pet" / "anim" / "all"
 CATALOG = (ROOT / "app" / "src" / "main" / "java" / "com" / "deepfocus" / "app"
            / "pet" / "PetAction.kt")
 MAP_FILE = HERE / "webm_action_map.json"
 BBOX_FILE = HERE / "anim_bbox.json"
-
-FFMPEG = (r"C:\Users\<user>\AppData\Local\Microsoft\WinGet\Packages"
-          r"\Gyan.FFmpeg_Microsoft.Winget.Source_8wekyb3d8bbwe"
-          r"\ffmpeg-8.1.2-full_build\bin\ffmpeg.exe")
 
 # ── 目标尺寸 ──
 # 归一化基准：**角色高度** = CHAR_HEIGHT 物理像素。

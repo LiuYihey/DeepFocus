@@ -30,15 +30,11 @@ import sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 APP = os.path.dirname(os.path.dirname(HERE))          # DeepFocus/
+sys.path.insert(0, HERE)
+from _toolpaths import FFMPEG, FFPROBE  # noqa: E402
+
 SRC = os.path.join(APP, "artwork", "videos", "focus")
 ASSETS = os.path.join(APP, "app", "src", "main", "assets", "videos", "focus")
-
-FFMPEG = (r"C:\Users\<user>\AppData\Local\Microsoft\WinGet\Packages"
-          r"\Gyan.FFmpeg_Microsoft.Winget.Source_8wekyb3d8bbwe"
-          r"\ffmpeg-8.1.2-full_build\bin\ffmpeg.exe")
-FFPROBE = (r"C:\Users\<user>\AppData\Local\Microsoft\WinGet\Packages"
-           r"\Gyan.FFmpeg_Microsoft.Winget.Source_8wekyb3d8bbwe"
-           r"\ffprobe-8.1.2-full_build\bin\ffprobe.exe")
 
 # 源文件 → 装到 assets 的名字
 TARGETS = [

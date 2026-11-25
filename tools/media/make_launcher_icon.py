@@ -35,7 +35,7 @@ from pathlib import Path
 
 from PIL import Image, ImageDraw, ImageFilter
 
-ROOT = Path(r".")
+ROOT = Path(__file__).resolve().parents[2]
 # 图标主体：大肥鱼可爱大头比耶照（已抠成纯 alpha）
 #
 # 2026-11-18 用户要求：「参考大肥鱼的形象图用 image2image 生成一个 app icon 图吧，

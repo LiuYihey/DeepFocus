@@ -26,11 +26,11 @@ from pypinyin import lazy_pinyin
 
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parents[1]
+sys.path.insert(0, str(HERE))
+from _toolpaths import FFMPEG  # noqa: E402
+
 GIF_DIR = ROOT / "artwork" / "pet_gif"
 WEBM_DIR = ROOT / "artwork" / "pet_webm"
-FFMPEG = (r"C:\Users\<user>\AppData\Local\Microsoft\WinGet\Packages"
-          r"\Gyan.FFmpeg_Microsoft.Winget.Source_8wekyb3d8bbwe"
-          r"\ffmpeg-8.1.2-full_build\bin\ffmpeg.exe")
 
 # 需要剥离的语义前缀
 STRIP_PREFIX = ["余额-", "点击回应-"]

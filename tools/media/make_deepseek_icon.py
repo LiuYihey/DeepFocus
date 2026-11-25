@@ -26,7 +26,7 @@ from pathlib import Path
 
 from PIL import Image
 
-ROOT = Path(r".")
+ROOT = Path(__file__).resolve().parents[2]
 # 源图放在 artwork/originals/ —— 素材源文件统一在那里，不散在仓库根目录
 SRC = ROOT / "artwork" / "originals" / "deepseek.jpg"
 RES = ROOT / "app" / "src" / "main" / "res"

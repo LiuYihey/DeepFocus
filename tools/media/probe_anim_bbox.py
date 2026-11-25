@@ -10,8 +10,9 @@ from pathlib import Path
 
 from PIL import Image
 
-ASSETS = Path(r".\app\src\main\assets\pet\anim\all")
-OUT = Path(r".\tools\media\anim_bbox.json")
+ROOT = Path(__file__).resolve().parents[2]
+ASSETS = ROOT / "app" / "src" / "main" / "assets" / "pet" / "anim" / "all"
+OUT = ROOT / "tools" / "media" / "anim_bbox.json"
 
 
 def frames_of(path: Path):

@@ -30,7 +30,7 @@ import re
 import sys
 from pathlib import Path
 
-ROOT = Path(r".")
+ROOT = Path(__file__).resolve().parents[2]
 PET = ROOT / "app" / "src" / "main" / "java" / "com" / "deepfocus" / "app" / "pet"
 SERVICE = PET / "DesktopPetService.kt"
 CONTROLLER = PET / "PetWindowController.kt"

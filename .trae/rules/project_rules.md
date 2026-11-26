@@ -1093,6 +1093,18 @@ python tools/media/make_sheet.py            # 生成表情包图墙（校对描�
 
 ### 4.5 API Key 绝不入 Git
 
+**事故记录（2026-11-26）**：火山方舟 API Key 曾明文写进
+`archive/tools_legacy/gen/regen2/ark.py`，随 commit `698387a` 推到公开仓库，
+并被 `v1.0.0` tag 包含，公开暴露约 3 天。已删除全部 Key，
+历史用 `git filter-repo` 重写（抹掉 `archive/`、`tools/_archive/`、
+`artwork/_archive/` 等路径 + replace-text 替换本机用户名），
+force-push 后新克隆不再含 Key。**但 GitHub 悬空对象在 GC 前仍可通过 SHA 读到**
+（实测 `api.github.com/repos/.../contents/<path>?ref=<旧SHA>` 仍返回原文），
+所以**泄露过的 key 只能靠轮换作废，重写历史只是辅助**。
+
+**推论：`.gitignore` 只防未来，防不了已经在历史里的东西。**
+凡是要写进代码的凭据，一律当它会泄露来对待。
+
 **线上路径**（用户自己用）：
 用户在「设置 → 大肥鱼 AI」填 key，存在设备本机 SharedPreferences，
 经 `SecureKeyStore`（Android Keystore AES-GCM）加密。
@@ -1111,6 +1123,18 @@ python tools/media/make_sheet.py            # 生成表情包图墙（校对描�
   内部用单引号把 `sh -c` 的命令串包起来 ——
   否则 `&&` 和 `>` 会被设备端最外层 shell 拆开，
   重定向跑在外层 shell（shell 用户），文件根本写不进 App 沙盒，**且不报错**。
+- **脚本里也不许硬编码 key**：一律 `os.environ.get("ARK_API_KEY", "")` 这类读环境变量。
+- **工具脚本不许硬编码本机绝对路径**（含 `C:\Users\<用户名>\...`）——
+  既泄用户名，又换机即失效：
+  - ffmpeg / ffprobe → `tools/media/_toolpaths.py`（先查 PATH，再扫 WinGet 包目录）
+  - adb → `os.environ["LOCALAPPDATA"]` 拼 `Android/Sdk/platform-tools/adb.exe`
+  - 仓库根目录 → `Path(__file__).resolve().parents[N]` 推导
+- **提交前必跑隐私扫描**（脚本在工作区 `.tools/`，不在本仓库）：
+  - `python .tools/staged_scan.py` —— 扫**暂存区树**（`git write-tree`），
+    比扫工作区准（被 ignore 的文件不会进提交）
+  - `python .tools/history_scan.py origin/main <仓库路径>` —— 扫**全量历史 blob**，
+    抓已经 commit 进去的凭据
+  - 扫到真的凭据 → 先轮换作废，再谈重写历史
 
 ## 版本号与 Release
 
